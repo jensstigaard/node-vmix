@@ -1,9 +1,9 @@
 // Import modules from the package
-// Note: when using npm swap in: 'vmix-js-utils' instead of '../index'
-const { Connection, CommandSender } = require('../index')
+// Note: when using npm swap in: 'node-vmix' instead of '../index'
+const { ConnectionHTTP, CommandSender } = require('../dist/index').default
 
 // Instanciate objects
-let connection = new Connection('localhost', 8088)
+let connection = new ConnectionHTTP('localhost', 8088)
 let commandSender = new CommandSender(connection)
 
 // Perform commands

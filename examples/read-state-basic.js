@@ -1,9 +1,9 @@
 // Import modules from the package
-// Note: when using npm swap in: 'vmix-js-utils' instead of '../index'
-const { ApiDataParser, Connection, InputMapper } = require('../index')
+// Note: when using npm swap in: 'node-vmix' instead of '../index'
+const { ApiDataParser, ConnectionTCP, InputMapper } = require('../dist/index').default
 
 // Set up vMix connection
-const connection = new Connection('localhost')
+const connection = new ConnectionTCP('localhost')
 connection.on('connect', () => {
   console.log('Connected')
 })

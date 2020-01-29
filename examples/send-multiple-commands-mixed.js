@@ -1,9 +1,9 @@
 // Import modules from the package
-// Note when using as npm dep: swap in: 'vmix-js-utils' instead of '../index'
-const { Connection } = require('../index')
+// Note when using as npm dep: swap in: 'node-vmix' instead of '../index'
+const { ConnectionTCP } = require('../dist/index').default
 
 // Instanciate connection to vMix instance via TCP localhost:8099
-let connection = new Connection('localhost')
+let connection = new ConnectionTCP('localhost')
 
 // Perform commands directly on connection
 // You can use any vMix Function here
