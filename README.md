@@ -11,7 +11,6 @@ It is possible to implement this yourself if necessary, by analysing the respons
 This code previously were found in the vmix-js-utils but are now branched out in its own package to enable usage of the vmix-js-utils to be used in a clean frontend environment (non-NodeJS), and also to give a better experience for the users. Are you looking for vMix utility for your js frontend? Take a look at [vmix-js-utils](https://github.com/jensstigaard/vmix-js-utils) for more info.
 Both packages are available with npm.
 
-
 ```javascript
 const { Connection } = require('node-vmix')
 
@@ -38,8 +37,8 @@ connection.send('TALLY')
 # Purpose
 The utilities consists of several modules. Each can be used on its own, but usually it makes more sense to make it interplay with some of the other modules.
 The modules is as following:
- - [Connection](#connection)
- - [ConnectionHttp](#connection-http)
+ - [Connection](#connection) (via TCP socket, recommended)
+ - [ConnectionHttp](#connection-http) (alternative)
 
 The modules are coded as classes, meaning that they are constructed with specific parameters, e.g. that the instanciation of a connection needs a host and a port. 
 
@@ -101,10 +100,10 @@ connection2.send({ Function: 'Merge' })
 You are also able to import all of the modules as a gathered variable, less elegant way:
 
 ```javascript
-const vMixUtils = require('node-vmix')
+const vMix = require('node-vmix')
 
-const connection1 = new vMixUtils.Connection('localhost')
-const connection2 = new vMixUtils.Connection('192.168.1.50')
+const connection1 = new vMix.Connection('localhost')
+const connection2 = new vMix.Connection('192.168.1.50')
 
 connection1.send({ Function: 'Cut' })
 connection2.send({ Function: 'Merge' })
@@ -114,14 +113,23 @@ connection2.send({ Function: 'Merge' })
 ## Standalone project / Fork
 The code can be cloned and tested as needed from the source code.
 
+Clone repository and go into directory
 ```sh
 git clone https://github.com/jensstigaard/node-vmix.git
 cd node-vmix
-
+```
+Install dependencies
+```sh
 npm install # or 'yarn'
+```
+Compile TypeScript source code to JavaScript
+```sh
+npm install # or 'yarn'
+```
+Run tests
+```sh
 npm test # or 'yarn test'
 
-node ./index.js
 ```
 
 
