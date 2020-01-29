@@ -1,7 +1,7 @@
-const axios = require('axios')
+import axios from 'axios'
 
 // Exceptions
-const ApiUrlError = require('./exceptions/api-url-error')
+import ApiUrlError from '../exceptions/api-url-error'
 
 /**
  * Connection for vMix API via HTTP

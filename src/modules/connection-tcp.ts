@@ -1,8 +1,9 @@
-import { Command } from '../types/command'
 import * as net from 'net'
 
 import querystring from 'querystring'
 
+// Types
+import { Command } from '../types/command'
 // Exceptions
 import ApiUrlError from '../exceptions/api-url-error'
 
@@ -145,7 +146,7 @@ export default class vMixConnectionTCP {
     /**
      * Establish connection
      */
-    protected establishConnection(): void {
+    protected establishConnection = (): void => {
         // Attempt establishing connection
         console.log('Attempting to establish connection to vMix instance...')
         this._socket.connect(this.port, this.host,
@@ -159,7 +160,7 @@ export default class vMixConnectionTCP {
     /**
      * Process received data that is currently in the buffer
      */
-    protected processBuffer() {
+    protected processBuffer = () => {
 
         // Process buffer if it contains data
         if (!this.buffer.byteLength) {
@@ -280,7 +281,7 @@ export default class vMixConnectionTCP {
     /**
      * Emit generic data message
      */
-    protected emitMessage(message: string) {
+    protected emitMessage = (message: string) => {
         // Tap callback listeners with message
         this.listeners.data.forEach((cb: Function) => {
             cb(message)
@@ -290,7 +291,7 @@ export default class vMixConnectionTCP {
     /**
      * Emit XML message
      */
-    protected emitXmlMessage(message: string) {
+    protected emitXmlMessage = (message: string) => {
 
         const listeners = this.listeners.xmlData
 
@@ -319,7 +320,7 @@ export default class vMixConnectionTCP {
      * 
      * @param {String} message 
      */
-    protected sendSingleMessage(message: string) {
+    protected sendSingleMessage = (message: string) => {
         // End message with a new line character
         // to make sure the message is interpreted by the receiver
         if (!message.endsWith('\r\n')) {
@@ -336,7 +337,7 @@ export default class vMixConnectionTCP {
      * @param {Object} command
      * @returns {String}
      */
-    protected commandObjectToString(command: Command) {
+    protected commandObjectToString = (command: Command) => {
 
         // Resolve function name and
         // remove it from object to be injected as querystring
@@ -353,7 +354,7 @@ export default class vMixConnectionTCP {
      * 
      * @returns {String}
      */
-    protected stringifyCommand(command: Command | string) {
+    protected stringifyCommand = (command: Command | string) => {
         if (typeof command === 'object') {
             return this.commandObjectToString(command)
         }
