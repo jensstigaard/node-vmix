@@ -2,7 +2,7 @@ const assert = require('assert')
 const moxios = require('moxios')
 
 // Import the modules
-const { CommandSenderHTTP, ConnectionHTTP } = require('../index')
+const { CommandSenderHTTP, ConnectionHTTP } = require('../dist/index').default
 
 describe('command-sender-http', function () {
 

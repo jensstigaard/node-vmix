@@ -1,7 +1,7 @@
 const assert = require('assert')
 
 // Import the modules
-const { ConnectionHTTP } = require('../index')
+const { ConnectionHTTP } = require('../dist/index').default
 
 describe('connection', function () {
     describe('instanciate', function () {
