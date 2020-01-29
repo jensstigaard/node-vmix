@@ -1,9 +1,11 @@
+//
+import ConnectionTCP from './modules/connection-tcp'
+
 import ConnectionHTTP from './modules/connection-http'
 import CommandSenderHTTP from './modules/command-sender-http'
-import CommandTCP from './modules/connection-tcp'
 
 export default {
-	CommandTCP,
+	ConnectionTCP,
 
 	// Legacy classes: 
 	// HTTP connection and command-sender
