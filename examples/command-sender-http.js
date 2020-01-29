@@ -1,20 +1,21 @@
 // Import modules from the package
 // Note: when using npm swap in: 'node-vmix' instead of '../index'
-const { ConnectionHTTP, CommandSender } = require('../dist/index').default
+const { ConnectionHTTP, CommandSenderHTTP } = require('../dist/index').default
 
 // Instanciate objects
 let connection = new ConnectionHTTP('localhost', 8088)
-let commandSender = new CommandSender(connection)
+let commandSender = new CommandSenderHTTP(connection)
 
 // Perform commands
 // You can use any vMix Function here
 // List of all functions here: 
 // https://www.vmix.com/help22/ShortcutFunctionReference.html
 
-let onSuccess = function (response) {
-    console.log('Performed command', response)
+function onSuccess(response) {
+    console.log('Performed command successfully')
+    console.log('Got response data:', response.data)
 }
-let onError = function (error) {
+function onError(error) {
     console.log('Could not perform command', error)
 }
 

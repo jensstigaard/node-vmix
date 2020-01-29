@@ -1,6 +1,7 @@
 // Import modules from the package
 // Note: when using npm swap in: 'node-vmix' instead of '../index'
-const { ApiDataParser, ConnectionTCP, InputMapper, StateFetcher } = require('../dist/index').default
+const { ConnectionTCP } = require('../dist/index').default
+const { InputMapper, StateFetcher } = require('vmix-js-utils')
 
 // Modules
 let connection = new ConnectionTCP('localhost', 8088)

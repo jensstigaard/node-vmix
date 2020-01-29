@@ -12,6 +12,9 @@ connection.on('connect', () => {
 connection.on('error', (error) => {
   console.error('Error', error)
 })
+connection.on('data', data => {
+  console.log('Got response with data:', data)
+})
 
 // Perform commands directly on connection
 // You can use any vMix Function here
