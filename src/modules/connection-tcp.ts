@@ -4,10 +4,11 @@ import querystring from 'querystring'
 
 // Types
 import { Command } from '../types/command'
+
 // Exceptions
 import ApiUrlError from '../exceptions/api-url-error'
 
-const listenerTypes = [
+const LISTENER_TYPES = [
     'close',
     'connect',
     'drain',
@@ -33,22 +34,24 @@ const NEWLINE_CHAR_LENGTH = 2 // Length in bytes of CRLF (New Line character on 
  */
 export default class vMixConnectionTCP {
 
-    protected host: string
-    protected port: number
-
-    protected isConnected: boolean = false
-    protected isRetrying: boolean = false
-    protected reconnectionInterval: NodeJS.Timeout | null = null
-    protected reconnectionIntervalTimeout: number = 3000
+    protected _host: string
+    protected _port: number
 
     // Buffer to store byte array of current incoming message
-    protected buffer: Buffer = Buffer.from([])
+    protected _buffer: Buffer = Buffer.from([])
 
     // TCP socket to vMix instance
     protected _socket: net.Socket = new net.Socket()
 
 
-    protected listeners: any = {}
+    protected _listeners: { [key: string]: Function[] } = {}
+
+    protected isConnected: boolean = false
+    protected isRetrying: boolean = false
+    protected reconnectionIntervalTimeout: number = 3000
+    protected reconnectionInterval: NodeJS.Timeout | null = null
+
+    protected _debug: boolean = false
 
     /**
      * 
@@ -56,7 +59,16 @@ export default class vMixConnectionTCP {
      * @param {number} port
      * @param {Function} onDataCallback 
      */
-    constructor(host: string = 'localhost', port: number = DEFAULT_TCP_PORT, onDataCallback: Function | null = null) {
+    constructor(
+        host: string = 'localhost',
+        port: number = DEFAULT_TCP_PORT,
+        onDataCallback: Function | null = null,
+        options: { [key: string]: any } = {}
+    ) {
+        // Set debug flag if parsed in options - disabled as default
+        if ('debug' in options && typeof options.debug === 'boolean' && options.debug) {
+            this._debug = true
+        }
 
         // Validate host and port
         if (!host || host.length < 3) {
@@ -67,27 +79,27 @@ export default class vMixConnectionTCP {
         }
 
         // Set private params
-        this.host = host
-        this.port = port
+        this._host = host
+        this._port = port
 
 
         // Initialize listener arrays and callback taps
-        this.listeners = {
+        this._listeners = {
             data: [],
             xmlData: []
             // ... plus the generic ones from the socket!
         }
 
         // On base listener types
-        listenerTypes.forEach(type => {
-            this.listeners[type] = []
+        LISTENER_TYPES.forEach(type => {
+            this._listeners[type] = []
 
             // Add socket listenener to tap all
             // registered callbacks
             this._socket.on(type, (data: any) => {
                 // Get all listeners of this type and
                 // Invoke callback method with data
-                this.listeners[type]
+                this._listeners[type]
                     .forEach((cb: Function) => {
                         cb(data)
                     })
@@ -96,15 +108,17 @@ export default class vMixConnectionTCP {
 
         // On data listener
         // Put data into buffer and try to process data
-        this._socket.on('data', (data: any) => {
-            this.buffer = Buffer.concat([this.buffer, data])
+        this._socket.on('data', (data: Buffer) => {
+            this._debug && console.log('Received data from socket', data)
+
+            this._buffer = Buffer.concat([this._buffer, data])
             this.processBuffer()
         })
 
         // Were a onDataCallback passed with constructor?
         // Add this to listeners for data
         if (onDataCallback && typeof onDataCallback === 'function') {
-            this.listeners.data.push(onDataCallback)
+            this._listeners.data.push(onDataCallback)
         }
 
         this._socket.on('close', () => {
@@ -115,7 +129,7 @@ export default class vMixConnectionTCP {
             }
 
             this.isRetrying = true
-            console.log('Reconnecting...')
+            this._debug && console.log('Reconnecting...')
 
             // Each X try to reestablish connection to vMix instance
             this.reconnectionInterval = setInterval(() => {
@@ -148,10 +162,10 @@ export default class vMixConnectionTCP {
      */
     protected establishConnection = (): void => {
         // Attempt establishing connection
-        console.log('Attempting to establish connection to vMix instance...')
-        this._socket.connect(this.port, this.host,
+        this._debug && console.log('Attempting to establish connection to vMix instance...')
+        this._socket.connect(this._port, this._host,
             () => {
-                console.log('Connected to vMix instance via TCP socket')
+                this._debug && console.log('Connected to vMix instance via TCP socket')
                 this.isConnected = true
                 this.isRetrying = false
             })
@@ -163,12 +177,12 @@ export default class vMixConnectionTCP {
     protected processBuffer = () => {
 
         // Process buffer if it contains data
-        if (!this.buffer.byteLength) {
+        if (!this._buffer.byteLength) {
             return
         }
 
         // Parse buffer to string and trim start and end
-        const data = this.buffer.toString()
+        const data = this._buffer.toString()
 
         // Split on each new line
         const receivedLines = data.split('\r\n')
@@ -224,9 +238,9 @@ export default class vMixConnectionTCP {
 
 
             // Pop first message from buffer
-            const sliced = this.buffer.slice(firstMessageLength + NEWLINE_CHAR_LENGTH) // New line character is two bytes
+            const sliced = this._buffer.slice(firstMessageLength + NEWLINE_CHAR_LENGTH) // New line character is two bytes
             // console.log('Sliced', sliced.toString())
-            this.buffer = sliced
+            this._buffer = sliced
 
             // Process more data
             this.processBuffer()
@@ -236,7 +250,7 @@ export default class vMixConnectionTCP {
         // We now know the message were a XML message
 
         if (firstMessageParts.length < 2) {
-            console.log('First message did not include how long the XML should be..')
+            this._debug && console.error('First message did not include how long the XML should be..', firstMessage)
             return
         }
 
@@ -258,7 +272,7 @@ export default class vMixConnectionTCP {
         // console.log('Needed from message: ', bufferLengthNeeded)
 
         const messageCompleteLength = firstMessageLength + NEWLINE_CHAR_LENGTH + bufferLengthNeeded
-        if (this.buffer.byteLength < messageCompleteLength) {
+        if (this._buffer.byteLength < messageCompleteLength) {
             // console.log('Not enough data in buffer...')
             // console.log(`"""${data}"""`)
             return
@@ -267,13 +281,13 @@ export default class vMixConnectionTCP {
         // The buffer were "long enough"
         // Exctract the XML data
 
-        const xmlData = this.buffer.slice(firstMessageLength + NEWLINE_CHAR_LENGTH, firstMessageLength + bufferLengthNeeded)
+        const xmlData = this._buffer.slice(firstMessageLength + NEWLINE_CHAR_LENGTH, firstMessageLength + bufferLengthNeeded)
         const xmlDataString = xmlData.toString()
 
         this.emitXmlMessage(xmlDataString)
 
         // Pop message from current buffer data and update buffer
-        this.buffer = this.buffer.slice(messageCompleteLength)
+        this._buffer = this._buffer.slice(messageCompleteLength)
 
         this.processBuffer()
     }
@@ -283,7 +297,7 @@ export default class vMixConnectionTCP {
      */
     protected emitMessage = (message: string) => {
         // Tap callback listeners with message
-        this.listeners.data.forEach((cb: Function) => {
+        this._listeners.data.forEach((cb: Function) => {
             cb(message)
         })
     }
@@ -293,7 +307,7 @@ export default class vMixConnectionTCP {
      */
     protected emitXmlMessage = (message: string) => {
 
-        const listeners = this.listeners.xmlData
+        const listeners = this._listeners.xmlData
 
         // If no xmlData listeners were registered then
         // fallback to emit the xml message as generic message
@@ -397,13 +411,13 @@ export default class vMixConnectionTCP {
      * @param {Function} callback 
      */
     on(type: string, callback: Function) {
-        const availableListenerTypes = listenerTypes.concat(['data', 'xmlData'])
+        const availableListenerTypes = LISTENER_TYPES.concat(['data', 'xmlData'])
 
         if (!availableListenerTypes.includes(type)) {
             throw new Error(`Invalid type of listener... ${type}`)
         }
 
-        this.listeners[type].push(callback)
+        this._listeners[type].push(callback)
     }
 
     /**
