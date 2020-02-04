@@ -46,11 +46,15 @@ export default class vMixConnectionTCP {
 
     protected _listeners: { [key: string]: Function[] } = {}
 
-    protected isConnected: boolean = false
-    protected isRetrying: boolean = false
-    protected reconnectionIntervalTimeout: number = 3000
-    protected reconnectionInterval: NodeJS.Timeout | null = null
+    // Auto reconnect? Enabled by default
+    protected _autoReconnect: boolean = true
 
+    protected _isConnected: boolean = false
+    protected _isRetrying: boolean = false
+    protected _reconnectionIntervalTimeout: number = 3000
+    protected _reconnectionInterval: NodeJS.Timeout | null = null
+
+    // Print debug messages? Disabled by default
     protected _debug: boolean = false
 
     /**
@@ -63,7 +67,10 @@ export default class vMixConnectionTCP {
         host: string = 'localhost',
         port: number = DEFAULT_TCP_PORT,
         onDataCallback: Function | null = null,
-        options: { [key: string]: any } = {}
+        options: {
+            debug?: boolean,
+            autoReconnect?: boolean
+        } = {}
     ) {
         // Set debug flag if parsed in options - disabled as default
         if ('debug' in options && typeof options.debug === 'boolean' && options.debug) {
@@ -106,6 +113,11 @@ export default class vMixConnectionTCP {
             })
         })
 
+        // Set autoReconnect option if in options - enabled as default
+        if ('autoReconnect' in options && typeof options.autoReconnect === 'boolean') {
+            this._autoReconnect = options.autoReconnect
+        }
+
         // On data listener
         // Put data into buffer and try to process data
         this._socket.on('data', (data: Buffer) => {
@@ -121,31 +133,40 @@ export default class vMixConnectionTCP {
             this._listeners.data.push(onDataCallback)
         }
 
+        this._socket.on('connect', () => {
+            this._debug && console.log('Connected to vMix instance via TCP socket')
+
+            this._isConnected = true
+            this._isRetrying = false
+        })
+
         this._socket.on('close', () => {
-            this.isConnected = false
-            // console.log('close');
-            if (this.isRetrying) {
+            this._isConnected = false
+
+            this._debug && console.log('Connection closed')
+
+            if (this._isRetrying || !this._autoReconnect) {
                 return
             }
 
-            this.isRetrying = true
+            this._isRetrying = true
             this._debug && console.log('Reconnecting...')
 
             // Each X try to reestablish connection to vMix instance
-            this.reconnectionInterval = setInterval(() => {
+            this._reconnectionInterval = setInterval(() => {
                 // If already connected - then clear the interval
                 // No need to try to connect - already connected
-                if (this.isConnected) {
-                    if (this.reconnectionInterval) {
-                        clearInterval(this.reconnectionInterval)
-                        this.reconnectionInterval = null
+                if (this._isConnected) {
+                    if (this._reconnectionInterval) {
+                        clearInterval(this._reconnectionInterval)
+                        this._reconnectionInterval = null
                     }
 
                     return
                 }
 
                 this.establishConnection()
-            }, this.reconnectionIntervalTimeout)
+            }, this._reconnectionIntervalTimeout)
         })
 
         this.establishConnection()
@@ -163,12 +184,8 @@ export default class vMixConnectionTCP {
     protected establishConnection = (): void => {
         // Attempt establishing connection
         this._debug && console.log('Attempting to establish connection to vMix instance...')
-        this._socket.connect(this._port, this._host,
-            () => {
-                this._debug && console.log('Connected to vMix instance via TCP socket')
-                this.isConnected = true
-                this.isRetrying = false
-            })
+
+        this._socket.connect(this._port, this._host)
     }
 
     /**
@@ -438,7 +455,7 @@ export default class vMixConnectionTCP {
     }
 
     connected() {
-        return this.isConnected
+        return this._isConnected
     }
 
     connecting() {
