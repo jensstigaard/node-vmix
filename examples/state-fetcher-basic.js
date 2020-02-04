@@ -1,11 +1,11 @@
 // Import modules from the package
 // Note: when using npm swap in: 'node-vmix' instead of '../index'
-const { ConnectionTCP } = require('../dist/index').default
+const { ConnectionTCP } = require('../dist/index')
 const { InputMapper, StateFetcher } = require('vmix-js-utils')
 
 // Modules
-let connection = new ConnectionTCP('localhost', 8088)
-let stateFetcher = new StateFetcher(connection)
+const connection = new ConnectionTCP('localhost', 8088)
+const stateFetcher = new StateFetcher(connection)
 
 // Register callback on state fetcher success
 // When data is fetched, what to do with it?
