@@ -1,3 +1,4 @@
+
 import * as net from 'net'
 
 import querystring from 'querystring'
@@ -32,7 +33,7 @@ const NEWLINE_CHAR_LENGTH = 2 // Length in bytes of CRLF (New Line character on 
  * Node.js TCP client / server
  * https://gist.github.com/sid24rane/2b10b8f4b2f814bd0851d861d3515a10
  */
-export default class vMixConnectionTCP {
+export default class ConnectionTCP {
 
     protected _host: string
     protected _port: number
