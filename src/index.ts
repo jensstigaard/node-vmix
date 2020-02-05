@@ -9,7 +9,7 @@ const Connection = ConnectionTCP
 export default {
 	Connection, // Alias for ConnectionTCP
 	ConnectionTCP,
-	
+
 	// Legacy classes: 
 	// HTTP connection and command-sender
 	CommandSenderHTTP,
@@ -17,6 +17,6 @@ export default {
 }
 
 // Also expose modules as separate modules to be imported
-export * from './modules/connection-tcp'
-export * from './modules/connection-http'
-export * from './modules/command-sender-http'
+exports.ConnectionTCP = ConnectionTCP
+exports.ConnectionHTTP = ConnectionHTTP
+exports.CommandSenderHTTP = CommandSenderHTTP
