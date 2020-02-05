@@ -33,7 +33,7 @@ const NEWLINE_CHAR_LENGTH = 2 // Length in bytes of CRLF (New Line character on 
  * Node.js TCP client / server
  * https://gist.github.com/sid24rane/2b10b8f4b2f814bd0851d861d3515a10
  */
-export default class ConnectionTCP {
+export class ConnectionTCP {
 
     protected _host: string
     protected _port: number
@@ -67,10 +67,10 @@ export default class ConnectionTCP {
     constructor(
         host: string = 'localhost',
         port: number = DEFAULT_TCP_PORT,
-        onDataCallback: Function | null = null,
         options: {
             debug?: boolean,
-            autoReconnect?: boolean
+            autoReconnect?: boolean,
+            onDataCallback?: Function,
         } = {}
     ) {
         // Set debug flag if parsed in options - disabled as default
@@ -128,10 +128,10 @@ export default class ConnectionTCP {
             this.processBuffer()
         })
 
-        // Were a onDataCallback passed with constructor?
+        // Is onDataCallback passed in options in constructor?
         // Add this to listeners for data
-        if (onDataCallback && typeof onDataCallback === 'function') {
-            this._listeners.data.push(onDataCallback)
+        if ('onDataCallback' in options && typeof options.onDataCallback === 'function') {
+            this._listeners.data.push(options.onDataCallback)
         }
 
         this._socket.on('connect', () => {
@@ -463,3 +463,5 @@ export default class ConnectionTCP {
         return this._socket.connecting
     }
 }
+
+export default ConnectionTCP

@@ -17,6 +17,10 @@ export default {
 }
 
 // Also expose modules as separate modules to be imported
-exports.ConnectionTCP = ConnectionTCP
-exports.ConnectionHTTP = ConnectionHTTP
-exports.CommandSenderHTTP = CommandSenderHTTP
+export {
+	ConnectionTCP,
+	ConnectionTCP as Connection
+} from './modules/connection-tcp'
+export { ConnectionHTTP } from './modules/connection-http'
+export { CommandSenderHTTP } from './modules/command-sender-http'
+

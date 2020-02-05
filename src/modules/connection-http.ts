@@ -10,7 +10,7 @@ import ApiUrlError from '../exceptions/api-url-error'
  * 
  * https://www.vmix.com/help22/DeveloperAPI.html
  */
-export default class ConnectionHTTP {
+export class ConnectionHTTP {
     protected host: string
     protected port: number
 
@@ -47,3 +47,5 @@ export default class ConnectionHTTP {
         return axios.get(this.webcontrollerUrl(), { timeout: 500 })
     }
 }
+
+export default ConnectionHTTP

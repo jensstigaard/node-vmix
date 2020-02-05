@@ -6,7 +6,7 @@ import ConnectionHTTP from './connection-http'
 import { Command } from '../types/command'
 
 //
-export default class CommandSenderHttp {
+export class CommandSenderHTTP {
     protected onError: Function
     protected onSuccess: Function
 
@@ -72,3 +72,4 @@ export default class CommandSenderHttp {
     }
 }
 
+export default CommandSenderHTTP
