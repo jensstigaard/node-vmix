@@ -6,20 +6,17 @@ import CommandSenderHTTP from './modules/command-sender-http'
 
 const Connection = ConnectionTCP
 
-export {
-	Connection, // Alias for ConnectionTCP
-	ConnectionTCP,
-
-	CommandSenderHTTP,
-	ConnectionHTTP
-}
-
 export default {
 	Connection, // Alias for ConnectionTCP
 	ConnectionTCP,
-
+	
 	// Legacy classes: 
 	// HTTP connection and command-sender
 	CommandSenderHTTP,
 	ConnectionHTTP,
 }
+
+// Also expose modules as separate modules to be imported
+export * from './modules/connection-tcp'
+export * from './modules/connection-http'
+export * from './modules/command-sender-http'
