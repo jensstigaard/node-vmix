@@ -1,7 +1,7 @@
 import axios from 'axios'
 import querystring from 'querystring'
 
-import Connection from './connection-http'
+import ConnectionHTTP from './connection-http'
 
 import { Command } from '../types/command'
 
@@ -10,9 +10,9 @@ export default class CommandSenderHttp {
     protected onError: Function
     protected onSuccess: Function
 
-    protected _connection!: Connection
+    protected _connection!: ConnectionHTTP
 
-    constructor(connection: Connection, onSuccess: Function, onError: Function) {
+    constructor(connection: ConnectionHTTP, onSuccess: Function, onError: Function) {
         this.setConnection(connection)
 
         this.onError = onError
@@ -50,7 +50,7 @@ export default class CommandSenderHttp {
      * Set the vMix connection used to know the endpoint for the vMix instance
      * @param {Connection} connection 
      */
-    setConnection(connection: Connection) {
+    setConnection(connection: ConnectionHTTP) {
         this._connection = connection
     }
 
@@ -71,3 +71,4 @@ export default class CommandSenderHttp {
         return promise
     }
 }
+

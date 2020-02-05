@@ -10,7 +10,7 @@ import ApiUrlError from '../exceptions/api-url-error'
  * 
  * https://www.vmix.com/help22/DeveloperAPI.html
  */
-export default class Connection {
+export default class ConnectionHTTP {
     protected host: string
     protected port: number
 
