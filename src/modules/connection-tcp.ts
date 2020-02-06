@@ -1,5 +1,5 @@
 
-import * as net from 'net'
+import { Socket } from 'net'
 
 import querystring from 'querystring'
 
@@ -13,6 +13,7 @@ const LISTENER_TYPES = [
     'close',
     'connect',
     'drain',
+    'disconnect',
     'end',
     'error',
     'lookup',
@@ -42,7 +43,7 @@ export class ConnectionTCP {
     protected _buffer: Buffer = Buffer.from([])
 
     // TCP socket to vMix instance
-    protected _socket: net.Socket = new net.Socket()
+    protected _socket: Socket = new Socket()
 
 
     protected _listeners: { [key: string]: Function[] } = {}
@@ -57,31 +58,40 @@ export class ConnectionTCP {
 
     // Print debug messages? Disabled by default
     protected _debug: boolean = false
+    protected _debugBuffers: boolean = false
 
     /**
      * 
      * @param {string} host
-     * @param {number} port
-     * @param {Function} onDataCallback 
+     * @param {object} options 
      */
     constructor(
         host: string = 'localhost',
-        port: number = DEFAULT_TCP_PORT,
         options: {
-            debug?: boolean,
             autoReconnect?: boolean,
+            connectOnStartup?: boolean,
+            debug?: boolean,
+            debugBuffers?: boolean,
             onDataCallback?: Function,
+            port?: number, // Is always 8099 since it currently cannot be changed in vMix
         } = {}
     ) {
         // Set debug flag if parsed in options - disabled as default
         if ('debug' in options && typeof options.debug === 'boolean' && options.debug) {
             this._debug = true
         }
+        // Set debug flag if parsed in options - disabled as default
+        if ('debugBuffers' in options && typeof options.debugBuffers === 'boolean' && options.debugBuffers) {
+            this._debugBuffers = true
+        }
 
         // Validate host and port
         if (!host || host.length < 3) {
             throw new ApiUrlError('Invalid host provided')
         }
+
+        const port: number = 'port' in options && options.port ? options.port : DEFAULT_TCP_PORT
+
         if (!port || port < 80 || port > 99999) {
             throw new ApiUrlError('Invalid port provided')
         }
@@ -122,7 +132,8 @@ export class ConnectionTCP {
         // On data listener
         // Put data into buffer and try to process data
         this._socket.on('data', (data: Buffer) => {
-            this._debug && console.log('Received data from socket', data)
+            this._debugBuffers && console.log('Received data on socket')
+            this._debugBuffers && console.log(data)
 
             this._buffer = Buffer.concat([this._buffer, data])
             this.processBuffer()
@@ -134,43 +145,47 @@ export class ConnectionTCP {
             this._listeners.data.push(options.onDataCallback)
         }
 
+        // Internal listener for on connection established events
         this._socket.on('connect', () => {
             this._debug && console.log('Connected to vMix instance via TCP socket')
 
             this._isConnected = true
             this._isRetrying = false
+
+            // Clear reconnection interval if it is set
+            if (this._reconnectionInterval) {
+                clearInterval(this._reconnectionInterval)
+                this._reconnectionInterval = null
+            }
         })
 
+        // Internal listener for on connection closed events
         this._socket.on('close', () => {
             this._isConnected = false
 
             this._debug && console.log('Connection closed')
 
-            if (this._isRetrying || !this._autoReconnect) {
+            // Check if auto reconnect is enabled
+            // Otherwise also if already retrying, do not init further reconnect attempt
+            if (!this._autoReconnect || this._isRetrying) {
                 return
             }
 
             this._isRetrying = true
-            this._debug && console.log('Reconnecting...')
+            this._debug && console.log('Initialising reconnecting procedure...')
 
             // Each X try to reestablish connection to vMix instance
             this._reconnectionInterval = setInterval(() => {
-                // If already connected - then clear the interval
-                // No need to try to connect - already connected
-                if (this._isConnected) {
-                    if (this._reconnectionInterval) {
-                        clearInterval(this._reconnectionInterval)
-                        this._reconnectionInterval = null
-                    }
-
-                    return
-                }
-
-                this.establishConnection()
+                this.attemptEstablishConnection()
             }, this._reconnectionIntervalTimeout)
         })
 
-        this.establishConnection()
+        // Connect on start up?
+        // Enabled by default if not explicitly passed in options as a false value,
+        // it is attempting to establish connectionÂ upon startup
+        if (!('connectOnStartup' in options) || (typeof options.connectOnStartup === 'boolean' && options.connectOnStartup)) {
+            this.attemptEstablishConnection()
+        }
     }
 
 
@@ -182,7 +197,7 @@ export class ConnectionTCP {
     /**
      * Establish connection
      */
-    protected establishConnection = (): void => {
+    protected attemptEstablishConnection = (): void => {
         // Attempt establishing connection
         this._debug && console.log('Attempting to establish connection to vMix instance...')
 
@@ -192,8 +207,7 @@ export class ConnectionTCP {
     /**
      * Process received data that is currently in the buffer
      */
-    protected processBuffer = () => {
-
+    protected processBuffer = (): void => {
         // Process buffer if it contains data
         if (!this._buffer.byteLength) {
             return
@@ -313,7 +327,7 @@ export class ConnectionTCP {
     /**
      * Emit generic data message
      */
-    protected emitMessage = (message: string) => {
+    protected emitMessage = (message: string): void => {
         // Tap callback listeners with message
         this._listeners.data.forEach((cb: Function) => {
             cb(message)
@@ -323,7 +337,7 @@ export class ConnectionTCP {
     /**
      * Emit XML message
      */
-    protected emitXmlMessage = (message: string) => {
+    protected emitXmlMessage = (message: string): void => {
 
         const listeners = this._listeners.xmlData
 
@@ -352,7 +366,7 @@ export class ConnectionTCP {
      * 
      * @param {String} message 
      */
-    protected sendSingleMessage = (message: string) => {
+    protected sendSingleMessage = (message: string): void => {
         // End message with a new line character
         // to make sure the message is interpreted by the receiver
         if (!message.endsWith('\r\n')) {
@@ -366,10 +380,10 @@ export class ConnectionTCP {
     /**
      * Convert a command object to the string to execute
      * 
-     * @param {Object} command
-     * @returns {String}
+     * @param {Command} command
+     * @returns {string}
      */
-    protected commandObjectToString = (command: Command) => {
+    protected commandObjectToString = (command: Command): string => {
 
         // Resolve function name and
         // remove it from object to be injected as querystring
@@ -382,11 +396,11 @@ export class ConnectionTCP {
 
     /**
      * Stringify commands if necessary
-     * @param {Object|String} command
+     * @param {Command|string} command
      * 
-     * @returns {String}
+     * @returns {string}
      */
-    protected stringifyCommand = (command: Command | string) => {
+    protected stringifyCommand = (command: Command | string): string => {
         if (typeof command === 'object') {
             return this.commandObjectToString(command)
         }
@@ -396,6 +410,12 @@ export class ConnectionTCP {
 
     // //////////////////////
     // Private methods end
+    // ////////////////////
+
+
+
+    // //////////////////////
+    // Public methods start
     // ////////////////////
 
 
@@ -412,7 +432,7 @@ export class ConnectionTCP {
      * 
      * @param {Command[]|Command|string} commands 
      */
-    send(command: Command[] | Command | string) {
+    send(command: Command[] | Command | string): void {
         const commands: any[] = !Array.isArray(command) ? [command] : command
 
         // Stringify each command (if necessary) and send these as 
@@ -423,12 +443,12 @@ export class ConnectionTCP {
     }
 
     /**
-     * Register listener on a specific type
+     * Register listener on a specific event type
      * 
      * @param {string} type 
      * @param {Function} callback 
      */
-    on(type: string, callback: Function) {
+    on(type: string, callback: Function): void {
         const availableListenerTypes = LISTENER_TYPES.concat(['data', 'xmlData'])
 
         if (!availableListenerTypes.includes(type)) {
@@ -439,9 +459,9 @@ export class ConnectionTCP {
     }
 
     /**
-     * AskShutdown and destroy the TCP socket
+     * Ask to Shutdown and destroy the TCP socket
      */
-    shutdown() {
+    shutdown(): void {
         // this.socket.destroy(); // kill client after server's response
         this._socket.destroy()
     }
@@ -449,19 +469,29 @@ export class ConnectionTCP {
     /**
      * Get raw TCP socket
      * 
-     * @returns net.Socket
+     * @returns Socket
      */
-    socket() {
+    socket(): Socket {
         return this._socket
     }
 
-    connected() {
+    /**
+     * Is currently connected?
+     */
+    connected(): boolean {
         return this._isConnected
     }
 
-    connecting() {
+    /**
+     * Is currently connecting?
+     */
+    connecting(): boolean {
         return this._socket.connecting
     }
+
+    // //////////////////////
+    // Public methods end
+    // ////////////////////
 }
 
 export default ConnectionTCP
