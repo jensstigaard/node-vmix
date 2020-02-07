@@ -672,10 +672,10 @@ typescript@^3.7.5:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.5.tgz#0692e21f65fd4108b9330238aac11dd2e177a1ae"
   integrity sha512-/P5lkRXkWHNAbcJIiHPfRoKqyd7bsyCma1hZNUGfn20qm64T6ZBlrzprymeu918H+mB/0rIg2gGK/BXkhhYgBw==
 
-vmix-js-utils@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/vmix-js-utils/-/vmix-js-utils-3.0.2.tgz#5ac2a47a31c0b7b7063990436c6ec4ca0601a753"
-  integrity sha512-Szk7S+rNT7YjBLrG+Q1a2eZsL40udi9kB/DSlDc/lAuTL7fB/EljIGv1V40WGYjgYAk4gQwclPN5j33LTi0npg==
+vmix-js-utils@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/vmix-js-utils/-/vmix-js-utils-3.1.0.tgz#1f5cdcd71f99734e0b926ef7c9fcc759bb642577"
+  integrity sha512-ql6xTNSw+CQ8vei9g+JrR59erZmWkxy+AE08tIrTJIPDEvCcsDuw+e423UVVJmjVNSbOghoiYwx9iWnIdUzMlw==
   dependencies:
     axios "^0.19.2"
     lodash "^4.17.15"
