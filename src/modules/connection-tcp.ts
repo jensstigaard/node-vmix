@@ -2,6 +2,7 @@
 import { Socket } from 'net'
 
 import querystring from 'querystring'
+import { TcpTally } from 'vmix-js-utils'
 
 // Types
 import { Command } from '../types/command'
@@ -9,11 +10,10 @@ import { Command } from '../types/command'
 // Exceptions
 import ApiUrlError from '../exceptions/api-url-error'
 
-const LISTENER_TYPES = [
+const SOCKET_BASE_LISTENER_TYPES = [
     'close',
     'connect',
     'drain',
-    'disconnect',
     'end',
     'error',
     'lookup',
@@ -21,9 +21,18 @@ const LISTENER_TYPES = [
     'timeout'
 ]
 
+const CUSTOM_LISTENER_TYPES = [
+    'data',
+    'disconnect',
+    'tally',
+    'xmlData'
+]
+
 const DEFAULT_TCP_PORT = 8099
 
 const NEWLINE_CHAR_LENGTH = 2 // Length in bytes of CRLF (New Line character on Microsoft Windows) "\r\n"
+
+
 
 /**
  * vMix Connection via TCP
@@ -53,7 +62,7 @@ export class ConnectionTCP {
 
     protected _isConnected: boolean = false
     protected _isRetrying: boolean = false
-    protected _reconnectionIntervalTimeout: number = 3000
+    protected _reconnectionIntervalTimeout: number = 10000
     protected _reconnectionInterval: NodeJS.Timeout | null = null
 
     // Print debug messages? Disabled by default
@@ -102,14 +111,15 @@ export class ConnectionTCP {
 
 
         // Initialize listener arrays and callback taps
-        this._listeners = {
-            data: [],
-            xmlData: []
-            // ... plus the generic ones from the socket!
-        }
+        // ... plus the generic ones from the socket!
+        this._listeners = {}
+
+        CUSTOM_LISTENER_TYPES.forEach((type: string) => {
+            this._listeners[type] = []
+        })
 
         // On base listener types
-        LISTENER_TYPES.forEach(type => {
+        SOCKET_BASE_LISTENER_TYPES.forEach((type: string) => {
             this._listeners[type] = []
 
             // Add socket listenener to tap all
@@ -117,10 +127,9 @@ export class ConnectionTCP {
             this._socket.on(type, (data: any) => {
                 // Get all listeners of this type and
                 // Invoke callback method with data
-                this._listeners[type]
-                    .forEach((cb: Function) => {
-                        cb(data)
-                    })
+                this._listeners[type].forEach((cb: Function) => {
+                    cb(data)
+                })
             })
         })
 
@@ -183,7 +192,9 @@ export class ConnectionTCP {
         // Connect on start up?
         // Enabled by default if not explicitly passed in options as a false value,
         // it is attempting to establish connectionÂ upon startup
-        if (!('connectOnStartup' in options) || (typeof options.connectOnStartup === 'boolean' && options.connectOnStartup)) {
+        if (!('connectOnStartup' in options) || (
+            typeof options.connectOnStartup === 'boolean' && options.connectOnStartup
+        )) {
             this.attemptEstablishConnection()
         }
     }
@@ -203,6 +214,7 @@ export class ConnectionTCP {
 
         this._socket.connect(this._port, this._host)
     }
+
 
     /**
      * Process received data that is currently in the buffer
@@ -261,6 +273,24 @@ export class ConnectionTCP {
         // console.log('First message length', `"${firstMessage}"`, firstMessageLength, firstMessage.length)
 
         const messageMethod = firstMessageParts[0]
+
+        // If message is a tally message and it is OK and then Emit Tally message
+        if (
+            messageMethod === 'TALLY'
+            && firstMessageParts[1] === 'OK'
+        ) {
+            // console.log('Not an XML message - instead a message of type', messageMethod)
+            this.emitTallyMessage(firstMessage)
+
+            // Pop first message from buffer
+            const sliced = this._buffer.slice(firstMessageLength + NEWLINE_CHAR_LENGTH) // New line character is two bytes
+            // console.log('Sliced', sliced.toString())
+            this._buffer = sliced
+
+            // Process more data
+            this.processBuffer()
+            return
+        }
 
         // If not an XML message then
         // just emit the message without further manipulation
@@ -324,6 +354,7 @@ export class ConnectionTCP {
         this.processBuffer()
     }
 
+
     /**
      * Emit generic data message
      */
@@ -331,6 +362,30 @@ export class ConnectionTCP {
         // Tap callback listeners with message
         this._listeners.data.forEach((cb: Function) => {
             cb(message)
+        })
+    }
+
+    /**
+     * Emit XML message
+     */
+    protected emitTallyMessage = (message: string): void => {
+
+        const listeners = this._listeners.tally
+
+        // If no xmlData listeners were registered then
+        // fallback to emit the xml message as generic message
+        if (!listeners || !listeners.length) {
+            return this.emitMessage(message)
+        }
+
+        const tallyString = message
+            .replace('TALLY OK ', '')
+
+        const summary = TcpTally.extractSummary(tallyString)
+
+        // Tap callback listeners with tally summary
+        listeners.forEach((cb: Function) => {
+            cb(summary)
         })
     }
 
@@ -351,29 +406,6 @@ export class ConnectionTCP {
         listeners.forEach((cb: Function) => {
             cb(message)
         })
-    }
-
-
-
-    /**
-     * Send message to connection
-     * 
-     * This must be a string of the complete command to execute
-     * 
-     * The available commands are listed under:
-     * https://www.vmix.com/help22/TCPAPI.html 
-     * See "Commands section"
-     * 
-     * @param {String} message 
-     */
-    protected sendSingleMessage = (message: string): void => {
-        // End message with a new line character
-        // to make sure the message is interpreted by the receiver
-        if (!message.endsWith('\r\n')) {
-            message += '\r\n'
-        }
-
-        this._socket.write(message)
     }
 
 
@@ -406,6 +438,28 @@ export class ConnectionTCP {
         }
 
         return command
+    }
+
+
+    /**
+     * Send message to connection
+     * 
+     * This must be a string of the complete command to execute
+     * 
+     * The available commands are listed under:
+     * https://www.vmix.com/help23/TCPAPI.html 
+     * See "Commands section"
+     * 
+     * @param {String} message 
+     */
+    protected sendSingleMessage = (message: string): void => {
+        // End message with a new line character
+        // to make sure the message is interpreted by the receiver
+        if (!message.endsWith('\r\n')) {
+            message += '\r\n'
+        }
+
+        this._socket.write(message)
     }
 
     // //////////////////////
@@ -449,7 +503,7 @@ export class ConnectionTCP {
      * @param {Function} callback 
      */
     on(type: string, callback: Function): void {
-        const availableListenerTypes = LISTENER_TYPES.concat(['data', 'xmlData'])
+        const availableListenerTypes = SOCKET_BASE_LISTENER_TYPES.concat(CUSTOM_LISTENER_TYPES)
 
         if (!availableListenerTypes.includes(type)) {
             throw new Error(`Invalid type of listener... ${type}`)
