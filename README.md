@@ -37,8 +37,8 @@ connection.send('TALLY')
 # Purpose
 The utilities consists of several modules. Each can be used on its own, but usually it makes more sense to make it interplay with some of the other modules.
 The modules is as following:
- - [ConnectionTCP](#connection) (via TCP socket, recommended)
- - [ConnectionHttp](#connection-http) (alternative)
+ - [ConnectionTCP](#connection) (recommended)
+ - [ConnectionHTTP](#connection-http)
 
 The modules are coded as classes, meaning that they are constructed with specific parameters, e.g. that the instanciation of a connection needs a host and a port. 
 
