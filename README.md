@@ -116,8 +116,10 @@ connection2.send({ Function: 'Merge' })
 
 
 # Examples and use
+## Electron example 
 Looking for a full blown example project? See the repository [simple-vmix-switcher-electron](https://github.com/jensstigaard/simple-vmix-switcher-electron) which is built with ElectronJS and can be compiled for both Windows, Mac or Linux platforms.
 
+## Code snippet examples
 Review index.js for some basic example of how to use the utilities
  - [Send single command example](../../blob/master/examples/send-single-command.js)
  - [Multiple commands example](../../blob/master/examples/send-multiple-commands.js)
