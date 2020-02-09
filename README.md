@@ -9,7 +9,7 @@ It is possible to implement this yourself if necessary, by analysing the respons
 [![npm version](https://badge.fury.io/js/node-vmix.svg)](https://www.npmjs.com/package/node-vmix)
 
 This code previously were found in the vmix-js-utils but are now branched out in its own package to enable usage of the vmix-js-utils to be used in a clean frontend environment (non-NodeJS), and also to give a better experience for the users. Are you looking for vMix utility for your js frontend? Take a look at [vmix-js-utils](https://github.com/jensstigaard/vmix-js-utils) for more info.
-Both packages are available with npm.
+Both packages are available with npm - see [my npm profile](https://www.npmjs.com/~jensstigaard).
 
 ```javascript
 const { ConnectionTCP } = require('node-vmix')
@@ -37,15 +37,15 @@ connection.send('TALLY')
 # Purpose
 The utilities consists of several modules. Each can be used on its own, but usually it makes more sense to make it interplay with some of the other modules.
 The modules is as following:
- - [ConnectionTCP](#connection) (recommended)
+ - [ConnectionTCP](#connectiontcp) (recommended)
  - [ConnectionHTTP](#connection-http)
 
 The modules are coded as classes, meaning that they are constructed with specific parameters, e.g. that the instanciation of a connection needs a host and a port. 
 
 
 # Description of modules
-## Connection
-The 'Connection' module is the core of the utils, and allows you to establish communication to a vMix instance.
+## ConnectionTCP
+The 'ConnectionTCP' module is the core of the utils, and allows you to establish communication to a vMix instance.
 It let you define which vMix TCP endpoint you want to receive from and send commands to, by passing the IP address to the constructor. You are also able to pass a custom port if it is not using the default port 8099. 
 
 ---
@@ -66,9 +66,14 @@ Use `.on('xmlData', (xmlData) => {})` to receive XML data of the vMix state. See
 
 Use `.on('data', (data) => {})` to receive data from the socket. Will also receive XML responses if no listener for 'xmlData' is registered.
 
+--- 
+
+## ConnectionHTTP
+The 'ConnectionHTTP' module is a utility to communicate with a vMix instance using HTTP. This is however not recommended.
+
 ---
 
-# StateFetcher
+## StateFetcher
 Being deprecated.
 Fetches the current state of the vMix instance.
 
@@ -110,6 +115,22 @@ connection2.send({ Function: 'Merge' })
 ```
 
 
+# Examples and use
+Looking for a full blown example project? See the repository [simple-vmix-switcher-electron](https://github.com/jensstigaard/simple-vmix-switcher-electron) which is built with ElectronJS and can be compiled for both Windows, Mac or Linux platforms.
+
+Review index.js for some basic example of how to use the utilities
+ - [Send single command example](../../blob/master/examples/send-single-command.js)
+ - [Multiple commands example](../../blob/master/examples/send-multiple-commands.js)
+ - [Multiple commands mixed strings/objects example](../../blob/master/examples/send-multiple-commands-mixed.js)
+ - [Read all inputs from vMix state basic example](../../blob/master/examples/read-state-basic.js)
+
+
+Legacy:
+ - [CommandSenderHTTP example](../../blob/master/examples/command-sender-http.js)
+ - [StateFetcher Basic example](../../blob/master/examples/state-fetcher-basic.js)
+
+
+
 ## Standalone project / Fork
 The code can be cloned and tested as needed from the source code.
 
@@ -131,20 +152,6 @@ Run tests
 npm test # or 'yarn test'
 
 ```
-
-
-# Examples and use
-Review index.js for some basic example of how to use the utilities
- - [Send single command example](../../blob/master/examples/send-single-command.js)
- - [Multiple commands example](../../blob/master/examples/send-multiple-commands.js)
- - [Multiple commands mixed strings/objects example](../../blob/master/examples/send-multiple-commands-mixed.js)
- - [Read all inputs from vMix state basic example](../../blob/master/examples/read-state-basic.js)
-
-
-Legacy:
- - [CommandSenderHTTP example](../../blob/master/examples/command-sender-http.js)
- - [StateFetcher Basic example](../../blob/master/examples/state-fetcher-basic.js)
-
 
 # Authors
 Jens Grønhøj Stigaard - <jens@stigaard.info> (http://jens.stigaard.info)
