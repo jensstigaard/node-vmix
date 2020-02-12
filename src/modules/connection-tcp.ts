@@ -21,11 +21,16 @@ const SOCKET_BASE_LISTENER_TYPES = [
     'timeout'
 ]
 
+const CUSTOM_MESSAGES_TYPES = [
+    'tally',
+    'activators',
+]
+
 const CUSTOM_LISTENER_TYPES = [
     'data',
     'disconnect',
-    'tally',
-    'xmlData'
+    'xml',
+    ...CUSTOM_MESSAGES_TYPES
 ]
 
 const DEFAULT_TCP_PORT = 8099
@@ -274,27 +279,29 @@ export class ConnectionTCP {
 
         const messageMethod = firstMessageParts[0]
 
-        // If message is a tally message and it is OK and then Emit Tally message
-        if (
-            messageMethod === 'TALLY'
-            && firstMessageParts[1] === 'OK'
-        ) {
-            // console.log('Not an XML message - instead a message of type', messageMethod)
-            this.emitTallyMessage(firstMessage)
-
-            // Pop first message from buffer
-            const sliced = this._buffer.slice(firstMessageLength + NEWLINE_CHAR_LENGTH) // New line character is two bytes
-            // console.log('Sliced', sliced.toString())
-            this._buffer = sliced
-
-            // Process more data
-            this.processBuffer()
-            return
-        }
 
         // If not an XML message then
         // just emit the message without further manipulation
         if (messageMethod !== 'XML') {
+            const messageMethodLower = messageMethod.toLowerCase()
+            // If message is a tally message and it is OK and had a tally listener and then Emit Tally message
+            if (
+                CUSTOM_MESSAGES_TYPES.includes(messageMethodLower)
+                && this._listeners[messageMethodLower].length
+            ) {
+                switch (messageMethodLower) {
+                    case 'tally':
+                        // console.log('Not an XML message - instead a message of type', messageMethod)
+                        this.emitTallyMessage(firstMessage)
+                        break;
+                    case 'activators':
+                        this.emitActivatorsMessage(firstMessage)
+                        break;
+                    default:
+                        break;
+                }
+            }
+
             // console.log('Not an XML message - instead a message of type', messageMethod)
             this.emitMessage(firstMessage)
 
@@ -366,7 +373,7 @@ export class ConnectionTCP {
     }
 
     /**
-     * Emit XML message
+     * Emit Tally message
      */
     protected emitTallyMessage = (message: string): void => {
 
@@ -390,11 +397,30 @@ export class ConnectionTCP {
     }
 
     /**
+     * Emit Activators message
+     */
+    protected emitActivatorsMessage = (message: string): void => {
+
+        const listeners = this._listeners.activators
+
+        // If no xmlData listeners were registered then
+        // fallback to emit the xml message as generic message
+        if (!listeners || !listeners.length) {
+            return this.emitMessage(message)
+        }
+
+        // Tap callback listeners with tally summary
+        listeners.forEach((cb: Function) => {
+            cb(message)
+        })
+    }
+
+    /**
      * Emit XML message
      */
     protected emitXmlMessage = (message: string): void => {
 
-        const listeners = this._listeners.xmlData
+        const listeners = this._listeners.xml
 
         // If no xmlData listeners were registered then
         // fallback to emit the xml message as generic message
@@ -503,13 +529,15 @@ export class ConnectionTCP {
      * @param {Function} callback 
      */
     on(type: string, callback: Function): void {
+        const listenerType = type.toLowerCase()
+
         const availableListenerTypes = SOCKET_BASE_LISTENER_TYPES.concat(CUSTOM_LISTENER_TYPES)
 
-        if (!availableListenerTypes.includes(type)) {
+        if (!availableListenerTypes.includes(listenerType)) {
             throw new Error(`Invalid type of listener... ${type}`)
         }
 
-        this._listeners[type].push(callback)
+        this._listeners[listenerType].push(callback)
     }
 
     /**

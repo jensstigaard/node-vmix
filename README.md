@@ -17,7 +17,7 @@ const { ConnectionTCP } = require('node-vmix')
 const connection = new ConnectionTCP('localhost')
 
 // Listener for xml state data
-connection.on('xmlData', xmlData => {
+connection.on('xml', xmlData => {
  // Your logic here!
  // See example to parse the XML correctly
 })
@@ -62,9 +62,13 @@ Parameters:
 
 It allows you to listen for incoming messages received on the socket.
 
-Use `.on('xmlData', (xmlData) => {})` to receive XML data of the vMix state. See examples below for how to parse the xml data received into usable data structures.
+Use `.on('activators', (message: string) => { ... })` to receive messages regarding activators of vMix instance. See examples below for how to parse the xml data received into usable data structures.
 
-Use `.on('data', (data) => {})` to receive data from the socket. Will also receive XML responses if no listener for 'xmlData' is registered.
+Use `.on('tally', (tallyString: string) => { ... })` to receive messages regarding tally updates for vMix instance. See examples below for how to parse the xml data received into usable data structures.
+
+Use `.on('xml', (xmlData: string) => { ... })` to receive XML data of the vMix state. See examples below for how to parse the xml data received into usable data structures.
+
+Use `.on('data', (message: string) => { ... })` to receive all data from the socket. Will also receive Tally, Activators and XML responses if no listener for these events is registered.
 
 ---
 
