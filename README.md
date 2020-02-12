@@ -126,8 +126,8 @@ Looking for a full blown example project? See the repository [simple-vmix-switch
 ## Code snippet examples
 Review index.js for some basic example of how to use the utilities
  - [Send single command example](../../blob/master/examples/send-single-command.js)
- - [Multiple commands example](../../blob/master/examples/send-multiple-commands.js)
- - [Multiple commands mixed strings/objects example](../../blob/master/examples/send-multiple-commands-mixed.js)
+ - [Send multiple commands example](../../blob/master/examples/send-multiple-commands.js)
+ - [Send multiple commands mixed strings/objects example](../../blob/master/examples/send-multiple-commands-mixed.js)
  - [Read all inputs from vMix state basic example](../../blob/master/examples/read-state-basic.js)
 
 
