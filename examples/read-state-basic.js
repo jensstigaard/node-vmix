@@ -13,7 +13,7 @@ connection.on('error', (error) => {
 
 // Register callback on xml data
 // When data is fetched, what to do with it?
-connection.on('xmlData', (xmlData) => {
+connection.on('xml', (xmlData) => {
   // Parse xml content
   const xmlContent = ApiDataParser.parse(xmlData)
 
