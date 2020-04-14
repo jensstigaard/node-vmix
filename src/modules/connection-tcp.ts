@@ -544,6 +544,7 @@ export class ConnectionTCP {
      * Ask to Shutdown and destroy the TCP socket
      */
     shutdown(): void {
+        this._autoReconnect = false; // stop trying to reconnect after being instructed to shutdown.
         // this.socket.destroy(); // kill client after server's response
         this._socket.destroy()
     }
