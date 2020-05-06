@@ -7,7 +7,7 @@ It is possible to implement this yourself if necessary, by analysing the respons
 
 [![package json version](https://img.shields.io/github/package-json/v/jensstigaard/node-vmix.svg)](https://www.github/jensstigaard/node-vmix)
 [![npm version](https://badge.fury.io/js/node-vmix.svg)](https://www.npmjs.com/package/node-vmix)
-[![npm downloads](https://img.shields.io/npm/dt/node-vmix)](https://www.npmjs.com/package/node-vmix)
+[![npm downloads](https://img.shields.io/npm/dm/node-vmix)](https://www.npmjs.com/package/node-vmix)
 
 This code previously were found in the vmix-js-utils but are now branched out in its own package to enable usage of the vmix-js-utils to be used in a clean frontend environment (non-NodeJS), and also to give a better experience for the users. Are you looking for vMix utility for your js frontend? Take a look at [vmix-js-utils](https://github.com/jensstigaard/vmix-js-utils) for more info.
 Both packages are available with npm - see [my npm profile](https://www.npmjs.com/~jensstigaard).
