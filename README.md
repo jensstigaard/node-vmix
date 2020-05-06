@@ -122,7 +122,11 @@ connection2.send({ Function: 'Merge' })
 
 # Examples and use
 ## Electron example 
-Looking for a full blown example project? See the repository [simple-vmix-switcher-electron](https://github.com/jensstigaard/simple-vmix-switcher-electron) which is built with ElectronJS and can be compiled for both Windows, Mac or Linux platforms.
+Looking for a full blown example project? See the repositories:
+ - [simple-vmix-switcher-electron](https://github.com/jensstigaard/simple-vmix-switcher-electron)
+ - [audio-matrix-vmix-electron](https://github.com/jensstigaard/audio-matrix-vmix-electron)
+ 
+Both these apps are using this library. They are built with ElectronJS and can be compiled for both Windows, Mac or Linux platforms.
 
 ## Code snippet examples
 Review index.js for some basic example of how to use the utilities
