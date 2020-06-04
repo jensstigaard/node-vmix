@@ -167,6 +167,8 @@ npm test # or 'yarn test'
 # Authors
 Jens Grønhøj Stigaard - <jens@stigaard.info> (http://jens.stigaard.info)
 
+# Contributors
+ - [splat1](https://github.com/splat1)
 
 # Contribution
 You are more than welcome to contribute to the repository!
