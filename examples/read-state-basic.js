@@ -1,6 +1,6 @@
 // Import modules from the package
-// Note: when using npm swap in: 'node-vmix' instead of '../index'
-const { ApiDataParser, ConnectionTCP, InputMapper } = require('../dist/index').default
+const { ConnectionTCP } = require('node-vmix');
+const { XmlApiDataParser, XmlInputMapper } = require('vmix-js-utils');
 
 // Set up vMix connection
 const connection = new ConnectionTCP('localhost')
@@ -15,12 +15,12 @@ connection.on('error', (error) => {
 // When data is fetched, what to do with it?
 connection.on('xml', (xmlData) => {
   // Parse xml content
-  const xmlContent = ApiDataParser.parse(xmlData)
+  const xmlContent = XmlApiDataParser.parse(xmlData)
 
   // Extract input data and
   // manipulate to desired format
-  const inputsRawData = InputMapper.extractInputsFromXML(xmlContent)
-  const inputsMap = InputMapper.mapInputs(inputsRawData)
+  const inputsRawData = XmlInputMapper.extractInputsFromXML(xmlContent)
+  const inputsMap = XmlInputMapper.mapInputs(inputsRawData)
   const inputsList = Object.values(inputsMap)
 
   // Now you have a list of inputs
