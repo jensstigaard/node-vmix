@@ -169,6 +169,7 @@ Jens Grønhøj Stigaard - <jens@stigaard.info> (http://jens.stigaard.info)
 
 # Contributors
  - [Matt Evans (@splat1)](https://github.com/splat1)
+ - [@grray](https://github.com/grray)
 
 # Contribution
 You are more than welcome to contribute to the repository!
