@@ -164,15 +164,11 @@ npm test # or 'yarn test'
 
 ```
 
-# Authors
-Jens Grønhøj Stigaard - <jens@stigaard.info> (http://jens.stigaard.info)
-
-# Contributors
- - [Matt Evans (@splat1)](https://github.com/splat1)
- - [@grray](https://github.com/grray)
-
 # Contribution
-You are more than welcome to contribute to the repository!
+You are more than welcome to contribute to the repository.
+Fork the repo and make a pull request with the changes.
+
+As you can see in the list on the right side, others have done it already!
 
 
 # Roadmap
