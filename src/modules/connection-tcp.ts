@@ -107,19 +107,20 @@ export class ConnectionTCP {
             this._debugBuffers = true
         }
 
-        this._debug && console.log('Received host', host)
-        this._debug && console.log('Received options', options)
+        this._debug && console.log('[node-vmix] Instanciating TCP socket to vMix instance', host)
+        this._debug && console.log('[node-vmix] Received host', host)
+        this._debug && console.log('[node-vmix] Received options', options)
         this._debug && console.log('-----')
 
         // Validate host and port
         if (!host || host.length < 3) {
-            throw new ApiUrlError('Invalid host provided')
+            throw new ApiUrlError(`[node-vmix] Invalid host provided '${host}'`)
         }
 
         const port: number = 'port' in options && options.port ? options.port : DEFAULT_TCP_PORT
 
         if (!port || port < 80 || port > 99999) {
-            throw new ApiUrlError('Invalid port provided')
+            throw new ApiUrlError(`[node-vmix] Invalid port provided '${port}'`)
         }
 
         // Set private attributes
@@ -158,8 +159,9 @@ export class ConnectionTCP {
         // On data listener
         // Put data into buffer and try to process data
         this._socket.on('data', (data: Buffer) => {
-            this._debugBuffers && console.log('Received data on socket')
+            this._debugBuffers && console.log('[node-vmix] Received data on socket')
             this._debugBuffers && console.log(data)
+            this._debugBuffers && console.log('----------------')
 
             this._buffer = Buffer.concat([this._buffer, data])
             this.processBuffer()
@@ -173,7 +175,7 @@ export class ConnectionTCP {
 
         // Internal listener for on connection established events
         this._socket.on('connect', () => {
-            this._debug && console.log('Connected to vMix instance via TCP socket')
+            this._debug && console.log('[node-vmix] Connected to vMix instance via TCP socket', host)
 
             this._isConnected = true
             this._isRetrying = false
@@ -189,7 +191,7 @@ export class ConnectionTCP {
         this._socket.on('close', () => {
             this._isConnected = false
 
-            this._debug && console.log('Socket connection to vMix instance closed')
+            this._debug && console.log('[node-vmix] Socket connection closed')
 
             // Check if auto reconnect is enabled
             // Otherwise also if already retrying, do not init further reconnect attempt
@@ -198,7 +200,7 @@ export class ConnectionTCP {
             }
 
             this._isRetrying = true
-            this._debug && console.log('Initialising reconnecting procedure...')
+            this._debug && console.log('[node-vmix] Initialising reconnecting procedure...')
 
             // Each X try to reestablish connection to vMix instance
             this._reconnectionInterval = setInterval(() => {
@@ -230,7 +232,7 @@ export class ConnectionTCP {
      * Establish connection
      */
     protected attemptEstablishConnection = (): void => {
-        this._debug && console.log('Attempting to establish connection to vMix instance...')
+        this._debug && console.log('[node-vmix] Attempting to establish connection to vMix instance...')
 
         // Attempt establishing connection
         this._socket.connect(this._port, this._host)
@@ -293,6 +295,7 @@ export class ConnectionTCP {
 
         const firstMessageLength = Buffer.from(firstMessage).byteLength
 
+        this._debugBuffers && console.log('[node-vmix] Reading buffer message:', firstMessage)
         // this._debugBuffers && console.log(
         //     'Length of first message in buffer',
         //     `"${firstMessage}"`,
@@ -300,44 +303,51 @@ export class ConnectionTCP {
         //     firstMessage.length
         // )
 
-        const [messageMethod, messageStatus] = firstMessageParts
+        const [messageType, messageStatus] = firstMessageParts
 
         // If an XML message then
         // just emit the message without further manipulation
-        if (messageMethod === 'XML') {
+        if (messageType === 'XML') {
             return this.processBufferXMLmessage(firstMessage, firstMessageLength, firstMessageParts)
             // Otherwise treat customly based on type of message
         } else {
-            return this.processBufferNonXMLmessage(messageMethod, messageStatus, firstMessage, firstMessageLength)
+            return this.processBufferNonXMLmessage(messageType, messageStatus, firstMessage, firstMessageLength)
         }
     }
 
     protected processBufferNonXMLmessage(
-        messageMethod: string,
+        messageType: string,
         messageStatus: string,
         firstMessage: string,
         firstMessageLength: number,
     ): void {
+        this._debugBuffers && console.log('[node-vmix] Processing non-XML message:', firstMessage)
+
         // If message status is Error then emit as regular message
         if (messageStatus === 'ER') {
+            this._debugBuffers && console.log('[node-vmix] Emitting error message:', firstMessage)
             return this.emitMessage(firstMessage)
         } else {
-            const messageMethodLower = messageMethod.toLowerCase()
-            // If message is a tally message and it is OK and had a tally listener and then Emit Tally message
+            const messageTypeLower = messageType.toLowerCase()
+            // If message is not having a registered listener 
+            // of is of a custom message type then Emit data generic message
             if (
-                CUSTOM_MESSAGES_TYPES.includes(messageMethodLower)
-                && this._listeners[messageMethodLower].length
+                !CUSTOM_MESSAGES_TYPES.includes(messageTypeLower)
+                || !this._listeners[messageTypeLower].length
             ) {
-                switch (messageMethodLower) {
+                this.emitMessage(firstMessage)
+            } else {
+                this._debugBuffers && console.log('[node-vmix] Handling custom message:', messageType)
+
+                switch (messageTypeLower) {
                     case 'tally':
-                        // console.log('Not an XML message - instead a message of type', messageMethod)
+                        // console.log('Not an XML message - instead a message of type', messageType)
                         this.emitTallyMessage(firstMessage)
                         break;
                     case 'activators':
                         this.emitActivatorsMessage(firstMessage)
                         break;
                     default:
-                        this.emitMessage(firstMessage)
                         break;
                 }
             }
@@ -365,7 +375,7 @@ export class ConnectionTCP {
         // We now know the message were a XML message
 
         if (firstMessageParts.length < 2) {
-            this._debug && console.error('First message did not include how long the XML should be..', firstMessage)
+            this._debug && console.error('[node-vmix] First message did not include how long the XML should be..', firstMessage)
             return
         }
 
@@ -508,7 +518,9 @@ export class ConnectionTCP {
             outputSB.push(cmdString)
         }
 
-        return outputSB.join(' ')
+        const output = outputSB.join(' ')
+
+        return output
     }
 
     /**
@@ -525,8 +537,12 @@ export class ConnectionTCP {
         }
 
         // First word must be uppercase always
-        const parts = command.split(' ')
-        command = [parts[0].toUpperCase(), parts.slice(1)].join(' ')
+        const indexFirstSpace = command.indexOf(' ')
+        if (indexFirstSpace === -1) {
+            return command.toUpperCase()
+        }
+
+        command = command.slice(0, indexFirstSpace + 1).toUpperCase() + command.slice(indexFirstSpace + 1)
 
         return command
     }
@@ -549,6 +565,8 @@ export class ConnectionTCP {
         if (!message.endsWith('\r\n')) {
             message += '\r\n'
         }
+
+        this._debug && console.log('[node-vmix] Sending message to socket', message)
 
         this._socket.write(message)
     }
