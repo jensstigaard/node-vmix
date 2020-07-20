@@ -21,9 +21,10 @@ const SOCKET_BASE_LISTENER_TYPES = [
     'timeout'
 ]
 
+// "Custom" types of messages from vMix
 const CUSTOM_MESSAGES_TYPES = [
-    'tally',
-    'activators',
+    'tally', // TALLY
+    'acts', // ACTS - Activators
 ]
 
 const CUSTOM_LISTENER_TYPES = [
@@ -39,7 +40,6 @@ const DEFAULT_TCP_PORT = 8099
 
 // Length in bytes of CRLF (New Line character on Microsoft Windows) "\r\n"
 const NEWLINE_CHAR_LENGTH = 2
-
 
 
 /**
@@ -287,6 +287,10 @@ export class ConnectionTCP {
             .map(p => p.trim())
             .filter(p => p)
 
+        if (firstMessageParts.length < 2) {
+            return
+        }
+
         const firstMessageLength = Buffer.from(firstMessage).byteLength
 
         // this._debugBuffers && console.log(
@@ -296,43 +300,48 @@ export class ConnectionTCP {
         //     firstMessage.length
         // )
 
-        const messageMethod = firstMessageParts[0]
+        const [messageMethod, messageStatus] = firstMessageParts
 
-        // If not an XML message then
+        // If an XML message then
         // just emit the message without further manipulation
-        if (messageMethod !== 'XML') {
-            this.processBufferNonXMLmessage(firstMessage, firstMessageLength, messageMethod)
+        if (messageMethod === 'XML') {
+            return this.processBufferXMLmessage(firstMessage, firstMessageLength, firstMessageParts)
+            // Otherwise treat customly based on type of message
         } else {
-            this.processBufferXMLmessage(firstMessage, firstMessageLength, firstMessageParts)
+            return this.processBufferNonXMLmessage(messageMethod, messageStatus, firstMessage, firstMessageLength)
         }
     }
 
     protected processBufferNonXMLmessage(
+        messageMethod: string,
+        messageStatus: string,
         firstMessage: string,
         firstMessageLength: number,
-        messageMethod: string
     ): void {
-        const messageMethodLower = messageMethod.toLowerCase()
-        // If message is a tally message and it is OK and had a tally listener and then Emit Tally message
-        if (
-            CUSTOM_MESSAGES_TYPES.includes(messageMethodLower)
-            && this._listeners[messageMethodLower].length
-        ) {
-            switch (messageMethodLower) {
-                case 'tally':
-                    // console.log('Not an XML message - instead a message of type', messageMethod)
-                    this.emitTallyMessage(firstMessage)
-                    break;
-                case 'activators':
-                    this.emitActivatorsMessage(firstMessage)
-                    break;
-                default:
-                    break;
+        // If message status is Error then emit as regular message
+        if (messageStatus === 'ER') {
+            return this.emitMessage(firstMessage)
+        } else {
+            const messageMethodLower = messageMethod.toLowerCase()
+            // If message is a tally message and it is OK and had a tally listener and then Emit Tally message
+            if (
+                CUSTOM_MESSAGES_TYPES.includes(messageMethodLower)
+                && this._listeners[messageMethodLower].length
+            ) {
+                switch (messageMethodLower) {
+                    case 'tally':
+                        // console.log('Not an XML message - instead a message of type', messageMethod)
+                        this.emitTallyMessage(firstMessage)
+                        break;
+                    case 'activators':
+                        this.emitActivatorsMessage(firstMessage)
+                        break;
+                    default:
+                        this.emitMessage(firstMessage)
+                        break;
+                }
             }
         }
-
-        // console.log('Not an XML message - instead a message of type', messageMethod)
-        this.emitMessage(firstMessage)
 
         // Pop first message from buffer
         const sliced = this._buffer.slice(firstMessageLength + NEWLINE_CHAR_LENGTH) // New line character is two bytes
@@ -428,6 +437,8 @@ export class ConnectionTCP {
         const tallyString = message
             .replace('TALLY OK ', '')
 
+        console.log(tallyString)
+
         const summary = TcpTally.extractSummary(tallyString)
 
         // Tap callback listeners with tally summary
@@ -476,20 +487,28 @@ export class ConnectionTCP {
 
 
     /**
-     * Convert a command object to the string to execute
+     * Convert a function command object to the string to execute
      * 
      * @param {Command} command
      * @returns {string}
      */
-    protected commandObjectToString = (command: Command): string => {
+    protected functionCommandObjectToString = (command: Command): string => {
 
-        // Resolve function name and
-        // remove it from object to be injected as querystring
+        // Resolve function name and remove it
+        // from rest of object which is injected as querystring
         const funcName = command.Function
         delete command.Function
 
-        const cmdString = querystring.stringify(command)
-        return `FUNCTION ${funcName} ${cmdString}`
+        // Prepare output string builder
+        const outputSB = ['FUNCTION', funcName]
+
+        // Turn other command parameters into querystring
+        if (Object.values(command).length) {
+            const cmdString = querystring.stringify(command)
+            outputSB.push(cmdString)
+        }
+
+        return outputSB.join(' ')
     }
 
     /**
@@ -499,9 +518,15 @@ export class ConnectionTCP {
      * @returns {string}
      */
     protected stringifyCommand = (command: Command | string): string => {
+        // If an object then it is a function command which
+        // needs to be turned it into a valid string
         if (typeof command === 'object') {
-            return this.commandObjectToString(command)
+            return this.functionCommandObjectToString(command)
         }
+
+        // First word must be uppercase always
+        const parts = command.split(' ')
+        command = [parts[0].toUpperCase(), parts.slice(1)].join(' ')
 
         return command
     }
@@ -553,7 +578,7 @@ export class ConnectionTCP {
      * @param {Command[]|Command|string} commands 
      */
     send(command: Command[] | Command | string): void {
-        const commands: any[] = !Array.isArray(command) ? [command] : command
+        const commands: (Command | string)[] = !Array.isArray(command) ? [command] : command
 
         // Stringify each command (if necessary) and send these as 
         // single messages on TCP socket to vMix instance
@@ -569,15 +594,16 @@ export class ConnectionTCP {
      * @param {Function} callback 
      */
     on(type: string, callback: Function): void {
-        const listenerType = type.toLowerCase()
+        const desiredListenerType = type.toLowerCase()
 
+        // All available listener types
         const availableListenerTypes = SOCKET_BASE_LISTENER_TYPES.concat(CUSTOM_LISTENER_TYPES)
 
-        if (!availableListenerTypes.includes(listenerType)) {
-            throw new Error(`Invalid type of listener... ${type}`)
+        if (!availableListenerTypes.includes(desiredListenerType)) {
+            throw new Error(`Invalid type of listener... '${type}'`)
         }
 
-        this._listeners[listenerType].push(callback)
+        this._listeners[desiredListenerType].push(callback)
     }
 
     /**
@@ -588,6 +614,7 @@ export class ConnectionTCP {
         this._autoReconnect = false
 
         // kill client after server's response
+        this.send('quit')
         this._socket.destroy()
     }
 

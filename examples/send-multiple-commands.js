@@ -17,7 +17,7 @@ connection.on('data', data => {
 })
 
 connection.on('xml', console.log)
-connection.send('XML')
+connection.send('xml')
 
 // Perform commands directly on connection
 // You can use any vMix Function here
