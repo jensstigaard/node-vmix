@@ -16,6 +16,9 @@ connection.on('data', data => {
   console.log('Got response with data:', data)
 })
 
+connection.on('xml', console.log)
+connection.send('XML')
+
 // Perform commands directly on connection
 // You can use any vMix Function here
 // List of all functions here: 
@@ -30,3 +33,4 @@ connection.send([
   // - Perform Cut to the input currently in preview
   { Function: 'Cut' }
 ])
+

@@ -33,9 +33,12 @@ const CUSTOM_LISTENER_TYPES = [
     ...CUSTOM_MESSAGES_TYPES
 ]
 
+// Port used by vMix is 8099
+// But it can be other port if the connection is through a firewall
 const DEFAULT_TCP_PORT = 8099
 
-const NEWLINE_CHAR_LENGTH = 2 // Length in bytes of CRLF (New Line character on Microsoft Windows) "\r\n"
+// Length in bytes of CRLF (New Line character on Microsoft Windows) "\r\n"
+const NEWLINE_CHAR_LENGTH = 2
 
 
 
@@ -87,9 +90,14 @@ export class ConnectionTCP {
             debug?: boolean,
             debugBuffers?: boolean,
             onDataCallback?: Function,
-            port?: number, // Is always 8099 since it currently cannot be changed in vMix
+            port?: number,
         } = {}
     ) {
+        // Guard passed options of wrong type
+        if (!options || typeof options !== 'object') {
+            options = {}
+        }
+
         // Set debug flag if parsed in options - disabled as default
         if ('debug' in options && typeof options.debug === 'boolean' && options.debug) {
             this._debug = true
@@ -98,6 +106,10 @@ export class ConnectionTCP {
         if ('debugBuffers' in options && typeof options.debugBuffers === 'boolean' && options.debugBuffers) {
             this._debugBuffers = true
         }
+
+        this._debug && console.log('Received host', host)
+        this._debug && console.log('Received options', options)
+        this._debug && console.log('-----')
 
         // Validate host and port
         if (!host || host.length < 3) {
@@ -110,7 +122,7 @@ export class ConnectionTCP {
             throw new ApiUrlError('Invalid port provided')
         }
 
-        // Set private params
+        // Set private attributes
         this._host = host
         this._port = port
 
@@ -177,7 +189,7 @@ export class ConnectionTCP {
         this._socket.on('close', () => {
             this._isConnected = false
 
-            this._debug && console.log('Connection closed')
+            this._debug && console.log('Socket connection to vMix instance closed')
 
             // Check if auto reconnect is enabled
             // Otherwise also if already retrying, do not init further reconnect attempt
@@ -197,9 +209,13 @@ export class ConnectionTCP {
         // Connect on start up?
         // Enabled by default if not explicitly passed in options as a false value,
         // it is attempting to establish connectionÂ upon startup
-        if (!('connectOnStartup' in options) || (
-            typeof options.connectOnStartup === 'boolean' && options.connectOnStartup
-        )) {
+        if (
+            !('connectOnStartup' in options)
+            || (
+                typeof options.connectOnStartup === 'boolean'
+                && options.connectOnStartup
+            )
+        ) {
             this.attemptEstablishConnection()
         }
     }
@@ -214,9 +230,9 @@ export class ConnectionTCP {
      * Establish connection
      */
     protected attemptEstablishConnection = (): void => {
-        // Attempt establishing connection
         this._debug && console.log('Attempting to establish connection to vMix instance...')
 
+        // Attempt establishing connection
         this._socket.connect(this._port, this._host)
     }
 
@@ -235,8 +251,6 @@ export class ConnectionTCP {
 
         // Split on each new line
         const receivedLines = data.split('\r\n')
-        // .map(line => line.trim())
-        // .filter(line => line)
 
         // If less than two lines were found
         // do not process buffer yet - keep whole buffer
@@ -275,47 +289,70 @@ export class ConnectionTCP {
 
         const firstMessageLength = Buffer.from(firstMessage).byteLength
 
-        // console.log('First message length', `"${firstMessage}"`, firstMessageLength, firstMessage.length)
+        // this._debugBuffers && console.log(
+        //     'Length of first message in buffer',
+        //     `"${firstMessage}"`,
+        //     firstMessageLength,
+        //     firstMessage.length
+        // )
 
         const messageMethod = firstMessageParts[0]
-
 
         // If not an XML message then
         // just emit the message without further manipulation
         if (messageMethod !== 'XML') {
-            const messageMethodLower = messageMethod.toLowerCase()
-            // If message is a tally message and it is OK and had a tally listener and then Emit Tally message
-            if (
-                CUSTOM_MESSAGES_TYPES.includes(messageMethodLower)
-                && this._listeners[messageMethodLower].length
-            ) {
-                switch (messageMethodLower) {
-                    case 'tally':
-                        // console.log('Not an XML message - instead a message of type', messageMethod)
-                        this.emitTallyMessage(firstMessage)
-                        break;
-                    case 'activators':
-                        this.emitActivatorsMessage(firstMessage)
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            // console.log('Not an XML message - instead a message of type', messageMethod)
-            this.emitMessage(firstMessage)
-
-
-            // Pop first message from buffer
-            const sliced = this._buffer.slice(firstMessageLength + NEWLINE_CHAR_LENGTH) // New line character is two bytes
-            // console.log('Sliced', sliced.toString())
-            this._buffer = sliced
-
-            // Process more data
-            this.processBuffer()
-            return
+            this.processBufferNonXMLmessage(firstMessage, firstMessageLength, messageMethod)
+        } else {
+            this.processBufferXMLmessage(firstMessage, firstMessageLength, firstMessageParts)
         }
 
+        this.processBuffer()
+    }
+
+    protected processBufferNonXMLmessage(
+        firstMessage: string,
+        firstMessageLength: number,
+        messageMethod: string
+    ): void {
+        const messageMethodLower = messageMethod.toLowerCase()
+        // If message is a tally message and it is OK and had a tally listener and then Emit Tally message
+        if (
+            CUSTOM_MESSAGES_TYPES.includes(messageMethodLower)
+            && this._listeners[messageMethodLower].length
+        ) {
+            switch (messageMethodLower) {
+                case 'tally':
+                    // console.log('Not an XML message - instead a message of type', messageMethod)
+                    this.emitTallyMessage(firstMessage)
+                    break;
+                case 'activators':
+                    this.emitActivatorsMessage(firstMessage)
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // console.log('Not an XML message - instead a message of type', messageMethod)
+        this.emitMessage(firstMessage)
+
+        // Pop first message from buffer
+        const sliced = this._buffer.slice(firstMessageLength + NEWLINE_CHAR_LENGTH) // New line character is two bytes
+        // console.log('Sliced', sliced.toString())
+        this._buffer = sliced
+    }
+
+    /**
+     * Process buffer XML message
+     * @param firstMessage
+     * @param firstMessageLength
+     * @param firstMessageParts
+     */
+    protected processBufferXMLmessage(
+        firstMessage: string,
+        firstMessageLength: number,
+        firstMessageParts: string[]
+    ): void {
         // We now know the message were a XML message
 
         if (firstMessageParts.length < 2) {
@@ -350,15 +387,16 @@ export class ConnectionTCP {
         // The buffer were "long enough"
         // Exctract the XML data
 
-        const xmlData = this._buffer.slice(firstMessageLength + NEWLINE_CHAR_LENGTH, firstMessageLength + bufferLengthNeeded)
+        const xmlData = this._buffer.slice(
+            firstMessageLength + NEWLINE_CHAR_LENGTH,
+            firstMessageLength + bufferLengthNeeded
+        )
         const xmlDataString = xmlData.toString()
 
         this.emitXmlMessage(xmlDataString)
 
         // Pop message from current buffer data and update buffer
         this._buffer = this._buffer.slice(messageCompleteLength)
-
-        this.processBuffer()
     }
 
 
@@ -544,8 +582,10 @@ export class ConnectionTCP {
      * Ask to Shutdown and destroy the TCP socket
      */
     shutdown(): void {
-        this._autoReconnect = false; // stop trying to reconnect after being instructed to shutdown.
-        // this.socket.destroy(); // kill client after server's response
+        // stop trying to reconnect after being instructed to shutdown.
+        this._autoReconnect = false
+
+        // kill client after server's response
         this._socket.destroy()
     }
 

@@ -1,28 +1,29 @@
 // Import modules from the package
 // Note: when using npm swap in: 'node-vmix' instead of '../index'
 const { ConnectionTCP } = require('../dist/index')
-const { InputMapper, StateFetcher } = require('vmix-js-utils')
+
+const { ApiDataParser, InputMapper } = require('vmix-js-utils')
 
 // Modules
-const connection = new ConnectionTCP('localhost', 8088)
-const stateFetcher = new StateFetcher(connection)
+const connection = new ConnectionTCP('localhost')
 
 // Register callback on state fetcher success
 // When data is fetched, what to do with it?
-stateFetcher.onSuccess(data => {
+connection.on('xml', data => {
     // Manipulate data
     let xmlContent = ApiDataParser.parse(data)
     let inputs = InputMapper.extractInputsFromXML(xmlContent)
     let inputsMap = InputMapper.mapInputs(inputs)
     let inputsList = Object.values(inputsMap)
 
-    console.log("I did read from the vMix API! Inputs: ", inputs.length)
+    console.log('Successfully read XML data from the vMix API!')
+    console.log('Number of inputs:', inputsList.length)
 })
 
-stateFetcher.onError(error => {
-    console.error(`Error.. Not able to read API data from a vMix web controller.. Trying again in ${stateFetcher.currentRefreshRate()}ms`)
-    //console.error(error)
+connection.on('error', error => {
+    console.error(`Error.. Not able to read API data from a vMix web controller.. `)
+    console.error(error)
 })
 
-// Start the state fetcher - it then runs 10 times a second
-stateFetcher.start()
+// Fetch XML data from vMix API
+connection.send('XML')
