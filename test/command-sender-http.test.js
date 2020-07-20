@@ -17,7 +17,7 @@ describe('command-sender-http', function () {
     })
 
     it('should fail if no connection were passed', async function () {
-        assert.throws(() => { new CommandSenderHTTP() }, "Somehow a connection were passed..?")
+        assert.throws(() => { new CommandSenderHTTP() }, "Somehow a connection without hostname were passed..?")
     })
 
     it('should instanciate if connection were passed', async function () {

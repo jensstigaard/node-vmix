@@ -13,6 +13,9 @@ export class CommandSenderHTTP {
     protected _connection!: ConnectionHTTP
 
     constructor(connection: ConnectionHTTP, onSuccess: Function, onError: Function) {
+        if(!connection) {
+            throw new Error('No connection provided')
+        }
         this.setConnection(connection)
 
         this.onError = onError
