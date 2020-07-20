@@ -672,7 +672,7 @@ typescript@^3.7.5:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.5.tgz#0692e21f65fd4108b9330238aac11dd2e177a1ae"
   integrity sha512-/P5lkRXkWHNAbcJIiHPfRoKqyd7bsyCma1hZNUGfn20qm64T6ZBlrzprymeu918H+mB/0rIg2gGK/BXkhhYgBw==
 
-vmix-js-utils@^3.8.1:
+vmix-js-utils@^3.8:
   version "3.8.1"
   resolved "https://registry.yarnpkg.com/vmix-js-utils/-/vmix-js-utils-3.8.1.tgz#82e74659709f559defe7a1f7440d505d6bd2ebb6"
   integrity sha512-JNhlRseT3yzherxRYx5mXb2bN7wHe4CSndd398qNME/XR/PYcnTCWDA+h3ucw0u2tG4Fta26shHSS4TcHYLVCw==
