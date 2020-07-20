@@ -1,6 +1,7 @@
 // Import modules from the package
-const { ConnectionTCP } = require('node-vmix');
-const { XmlApiDataParser, XmlInputMapper } = require('vmix-js-utils');
+// Note when using as npm dep: swap in: 'node-vmix' instead of '../index'
+const { ConnectionTCP } = require('../dist/index')
+const { XmlApiDataParser, XmlInputMapper } = require('vmix-js-utils')
 
 // Set up vMix connection
 const connection = new ConnectionTCP('localhost')
