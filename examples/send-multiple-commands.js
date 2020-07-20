@@ -6,9 +6,6 @@ const { ConnectionTCP } = require('../dist/index')
 const vMixAddress = 'localhost'
 const connection = new ConnectionTCP(vMixAddress)
 
-connection.on('connect', () => {
-  console.log('Connected')
-})
 connection.on('error', (error) => {
   console.error('Error', error)
 })
@@ -16,8 +13,11 @@ connection.on('data', data => {
   console.log('Got response with data:', data)
 })
 
-connection.on('xml', console.log)
-connection.send('xml')
+connection.on('connect', () => {
+  console.log('Connected!')
+})
+// connection.on('xml', console.log)
+// connection.send('xml')
 
 // Perform commands directly on connection
 // You can use any vMix Function here
@@ -28,9 +28,8 @@ connection.send('xml')
 connection.send([
   // - On title on input with name 'MyTitle' - set text of field "TitleField" to the text "Updated text!"
   { Function: 'SetText', Input: 'MyTitle', SelectedName: 'TitleField', Value: 'Updated text!' },
-  // - Put input 1 on air on overlay channel 1
-  { Function: 'OverlayInput1On', Input: 'MyTitle' },
+  // - Transition in Input 3 on Overlay Channel 1
+  { Function: 'OverlayInput1In', Input: 3 },
   // - Perform Cut to the input currently in preview
   { Function: 'Cut' }
 ])
-
