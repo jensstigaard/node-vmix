@@ -672,15 +672,14 @@ typescript@^3.7.5:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.5.tgz#0692e21f65fd4108b9330238aac11dd2e177a1ae"
   integrity sha512-/P5lkRXkWHNAbcJIiHPfRoKqyd7bsyCma1hZNUGfn20qm64T6ZBlrzprymeu918H+mB/0rIg2gGK/BXkhhYgBw==
 
-vmix-js-utils@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/vmix-js-utils/-/vmix-js-utils-3.2.0.tgz#c15a2931031dc9f73bfd905b01c3ecc793167e0d"
-  integrity sha512-zV8AavjlV9JX5RAVyNXc16FS74HgComvqbVYA9dryJtuWsXLl+gmw6ByzV4tm2qZ8kTYMFTecM7/yPIgvbp/vQ==
+vmix-js-utils@^3.8.1:
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/vmix-js-utils/-/vmix-js-utils-3.8.1.tgz#82e74659709f559defe7a1f7440d505d6bd2ebb6"
+  integrity sha512-JNhlRseT3yzherxRYx5mXb2bN7wHe4CSndd398qNME/XR/PYcnTCWDA+h3ucw0u2tG4Fta26shHSS4TcHYLVCw==
   dependencies:
-    axios "^0.19.2"
     lodash "^4.17.15"
     querystring "^0.2.0"
-    xmldom "^0.2.1"
+    xmldom "^0.3.0"
     xpath "^0.0.27"
 
 which-module@^2.0.0:
@@ -716,10 +715,10 @@ wrappy@1:
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
 
-xmldom@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.2.1.tgz#cac9465066f161e1c3302793ea4dbe59c518274f"
-  integrity sha512-kXXiYvmblIgEemGeB75y97FyaZavx6SQhGppLw5TKWAD2Wd0KAly0g23eVLh17YcpxZpnFym1Qk/eaRjy1APPg==
+xmldom@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.3.0.tgz#e625457f4300b5df9c2e1ecb776147ece47f3e5a"
+  integrity sha512-z9s6k3wxE+aZHgXYxSTpGDo7BYOUfJsIRyoZiX6HTjwpwfS2wpQBQKa2fD+ShLyPkqDYo5ud7KitmLZ2Cd6r0g==
 
 xpath@^0.0.27:
   version "0.0.27"
