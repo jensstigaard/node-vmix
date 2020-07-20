@@ -305,8 +305,6 @@ export class ConnectionTCP {
         } else {
             this.processBufferXMLmessage(firstMessage, firstMessageLength, firstMessageParts)
         }
-
-        this.processBuffer()
     }
 
     protected processBufferNonXMLmessage(
@@ -340,6 +338,8 @@ export class ConnectionTCP {
         const sliced = this._buffer.slice(firstMessageLength + NEWLINE_CHAR_LENGTH) // New line character is two bytes
         // console.log('Sliced', sliced.toString())
         this._buffer = sliced
+
+        this.processBuffer()
     }
 
     /**
@@ -397,6 +397,8 @@ export class ConnectionTCP {
 
         // Pop message from current buffer data and update buffer
         this._buffer = this._buffer.slice(messageCompleteLength)
+
+        this.processBuffer()
     }
 
 
