@@ -125,23 +125,25 @@ connection2.send({ Function: 'Merge' })
 # Examples and use
 ## Electron example 
 Looking for a full blown example project? See the repositories:
- - [audio-matrix-vmix-electron](https://github.com/jensstigaard/audio-matrix-vmix-electron)
- - [simple-vmix-switcher-electron](https://github.com/jensstigaard/simple-vmix-switcher-electron)
- - [vinproma](https://github.com/jensstigaard/vinproma)
+ * [audio-matrix-vmix-electron](https://github.com/jensstigaard/audio-matrix-vmix-electron)
+ * [simple-vmix-switcher-electron](https://github.com/jensstigaard/simple-vmix-switcher-electron)
+ * [vinproma](https://github.com/jensstigaard/vinproma)
  
 These apps are using this library for vMix connection. They are built with ElectronJS and can be compiled for both Windows, Mac or Linux platforms.
 
 ## Code snippet examples
 Review index.js for some basic example of how to use the utilities
- - [Send single command example](../../blob/master/examples/send-single-command.js)
- - [Send multiple commands example](../../blob/master/examples/send-multiple-commands.js)
- - [Send multiple commands mixed strings/objects example](../../blob/master/examples/send-multiple-commands-mixed.js)
- - [Read all inputs from vMix state basic example](../../blob/master/examples/read-state-basic.js)
+ * Send
+   * [Send single command example](../../blob/master/examples/send-single-command.js)
+   * [Send multiple commands example](../../blob/master/examples/send-multiple-commands.js)
+   * [Send multiple commands mixed strings/objects example](../../blob/master/examples/send-multiple-commands-mixed.js)
+ * Retrieve
+   * [Retrieve all inputs from vMix state - Basic example](../../blob/master/examples/read-state-basic.js)
 
 
 Legacy:
- - [CommandSenderHTTP example](../../blob/master/examples/command-sender-http.js)
- - [StateFetcher Basic example](../../blob/master/examples/state-fetcher-basic.js)
+ * [CommandSenderHTTP example](../../blob/master/examples/command-sender-http.js)
+ * [StateFetcher Basic example](../../blob/master/examples/state-fetcher-basic.js)
 
 
 
