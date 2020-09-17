@@ -232,7 +232,7 @@ export class ConnectionTCP {
      * Establish connection
      */
     protected attemptEstablishConnection = (): void => {
-        this._debug && console.log('[node-vmix] Attempting to establish connection to vMix instance...')
+        this._debug && console.log(`[node-vmix] Attempting to establish TCP socket connection to vMix instance ${this._host}:${this._port}`)
 
         // Attempt establishing connection
         this._socket.connect(this._port, this._host)
@@ -444,10 +444,10 @@ export class ConnectionTCP {
             return this.emitMessage(message)
         }
 
+        this._debug && console.log('Tally string: ', message)
+
         const tallyString = message
             .replace('TALLY OK ', '')
-
-        console.log(tallyString)
 
         const summary = TcpTally.extractSummary(tallyString)
 
