@@ -630,6 +630,10 @@ export class ConnectionTCP {
     shutdown(): void {
         // stop trying to reconnect after being instructed to shutdown.
         this._autoReconnect = false
+        if (this._reconnectionInterval) {
+            clearInterval(this._reconnectionInterval)
+            this._reconnectionInterval = null
+        }
 
         // kill client after server's response
         this.send('quit')
