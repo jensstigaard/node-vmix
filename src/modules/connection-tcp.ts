@@ -61,8 +61,7 @@ export class ConnectionTCP {
     protected _buffer: Buffer = Buffer.from([])
 
     // TCP socket to vMix instance
-    protected _socket: Socket = new Socket()
-
+    protected _socket: Socket | null = null
 
     protected _listeners: { [key: string]: Function[] } = {}
 
@@ -73,6 +72,10 @@ export class ConnectionTCP {
     protected _isRetrying: boolean = false
     protected _reconnectionIntervalTimeout: number = 10000
     protected _reconnectionInterval: NodeJS.Timeout | null = null
+
+    // Timeout for establishing the connection. Should be smaller than the reconnect invterval!
+    protected _connectTimeoutDuration: number = 5000
+    protected _connectTimeout: NodeJS.Timeout | null = null
 
     // Print debug messages? Disabled by default
     protected _debug: boolean = false
@@ -137,19 +140,8 @@ export class ConnectionTCP {
             this._listeners[type] = []
         })
 
-        // On base listener types
         SOCKET_BASE_LISTENER_TYPES.forEach((type: string) => {
             this._listeners[type] = []
-
-            // Add socket listenener to tap all
-            // registered callbacks
-            this._socket.on(type, (data: any) => {
-                // Get all listeners of this type and
-                // Invoke callback method with data
-                this._listeners[type].forEach((cb: Function) => {
-                    cb(data)
-                })
-            })
         })
 
         // Set autoReconnect option if in options - enabled as default
@@ -157,57 +149,11 @@ export class ConnectionTCP {
             this._autoReconnect = options.autoReconnect
         }
 
-        // On data listener
-        // Put data into buffer and try to process data
-        this._socket.on('data', (data: Buffer) => {
-            this._debugBuffers && console.log('[node-vmix] Received data on socket')
-            this._debugBuffers && console.log(data)
-            this._debugBuffers && console.log('----------------')
-
-            this._buffer = Buffer.concat([this._buffer, data])
-            this.processBuffer()
-        })
-
         // Is onDataCallback passed in options in constructor?
         // Add this to listeners for data
         if ('onDataCallback' in options && typeof options.onDataCallback === 'function') {
             this._listeners.data.push(options.onDataCallback)
         }
-
-        // Internal listener for on connection established events
-        this._socket.on('connect', () => {
-            this._debug && console.log('[node-vmix] Connected to vMix instance via TCP socket', host)
-
-            this._isConnected = true
-            this._isRetrying = false
-
-            // Clear reconnection interval if it is set
-            if (this._reconnectionInterval) {
-                clearInterval(this._reconnectionInterval)
-                this._reconnectionInterval = null
-            }
-        })
-
-        // Internal listener for on connection closed events
-        this._socket.on('close', () => {
-            this._isConnected = false
-
-            this._debug && console.log('[node-vmix] Socket connection closed')
-
-            // Check if auto reconnect is enabled
-            // Otherwise also if already retrying, do not init further reconnect attempt
-            if (!this._autoReconnect || this._isRetrying) {
-                return
-            }
-
-            this._isRetrying = true
-            this._debug && console.log('[node-vmix] Initialising reconnecting procedure...')
-
-            // Each X try to reestablish connection to vMix instance
-            this._reconnectionInterval = setInterval(() => {
-                this.attemptEstablishConnection()
-            }, this._reconnectionIntervalTimeout)
-        })
 
         // Connect on start up?
         // Enabled by default if not explicitly passed in options as a false value,
@@ -219,7 +165,9 @@ export class ConnectionTCP {
                 && options.connectOnStartup
             )
         ) {
-            this.attemptEstablishConnection()
+            // Set a zero delay timeout to ensure that the caller can register
+            // event handlers before we try to call them
+            setTimeout(() => this.attemptEstablishConnection(), 0)
         }
     }
 
@@ -240,8 +188,90 @@ export class ConnectionTCP {
             cb()
         })
 
+        const socket = new Socket()
+
+        // Add socket listenener to tap all
+        // registered callbacks
+        SOCKET_BASE_LISTENER_TYPES.forEach((type: string) => {
+            socket.on(type, (data: any) => {
+                // Get all listeners of this type and
+                // Invoke callback method with data
+                this._listeners[type].forEach((cb: Function) => {
+                    cb(data)
+                })
+            })
+        })
+
+        // Internal listener for on connection established events
+        socket.on('connect', () => {
+            this._debug && console.log('[node-vmix] Connected to vMix instance via TCP socket', this._host)
+
+            this._isConnected = true
+            this._isRetrying = false
+
+            if (this._connectTimeout) {
+                clearTimeout(this._connectTimeout)
+                this._connectTimeout = null
+            }
+
+            // Clear reconnection interval if it is set
+            if (this._reconnectionInterval) {
+                clearInterval(this._reconnectionInterval)
+                this._reconnectionInterval = null
+            }
+        })
+
+        // Internal listener for on connection closed events
+        socket.on('close', () => {
+            this._isConnected = false
+
+            if (this._connectTimeout) {
+                clearTimeout(this._connectTimeout)
+                this._connectTimeout = null
+            }
+
+            this._debug && console.log('[node-vmix] Socket connection closed')
+
+            // Check if auto reconnect is enabled
+            // Otherwise also if already retrying, do not init further reconnect attempt
+            if (!this._autoReconnect || this._isRetrying) {
+                return
+            }
+
+            this._isRetrying = true
+            this._debug && console.log('[node-vmix] Initialising reconnecting procedure...')
+
+            // Each X try to reestablish connection to vMix instance
+            this._reconnectionInterval = setInterval(() => {
+                this.attemptEstablishConnection()
+            }, this._reconnectionIntervalTimeout)
+        })
+
+        // On data listener
+        // Put data into buffer and try to process data
+        socket.on('data', (data: Buffer) => {
+            this._debugBuffers && console.log('[node-vmix] Received data on socket')
+            this._debugBuffers && console.log(data)
+            this._debugBuffers && console.log('----------------')
+
+            this._buffer = Buffer.concat([this._buffer, data])
+            this.processBuffer()
+        })
+
+        // Setup timeout for maximum time to connect
+        this._connectTimeout = setTimeout(() => {
+            this._debug && console.log('[node-vmix] Connect timeout reached')
+
+            if (this._socket) {
+                this._socket.destroy()
+                this._socket = null
+            }
+        }, this._connectTimeoutDuration)
+
+        this._socket = socket
+
         // Attempt establishing connection
-        this._socket.connect(this._port, this._host)
+        socket.connect(this._port, this._host)
     }
 
 
@@ -574,6 +604,7 @@ export class ConnectionTCP {
 
         this._debug && console.log('[node-vmix] Sending message to socket', message)
 
+        if (!this._socket) throw new Error('Tried to send data without connection')
         this._socket.write(message)
     }
 
@@ -641,17 +672,20 @@ export class ConnectionTCP {
             this._reconnectionInterval = null
         }
 
-        // kill client after server's response
-        this.send('quit')
-        this._socket.destroy()
+        if (this._socket) {
+            // kill client after server's response
+            this.send('quit')
+            this._socket.destroy()
+            this._socket = null
+        }
     }
 
     /**
      * Get raw TCP socket
      * 
-     * @returns Socket
+     * @returns Socket | null
      */
-    socket(): Socket {
+    socket(): Socket | null {
         return this._socket
     }
 
@@ -666,6 +700,7 @@ export class ConnectionTCP {
      * Is currently connecting?
      */
     connecting(): boolean {
+        if (!this._socket) return false
         return this._socket.connecting
     }
 
