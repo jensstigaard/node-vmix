@@ -28,6 +28,7 @@ const CUSTOM_MESSAGES_TYPES = [
 ]
 
 const CUSTOM_LISTENER_TYPES = [
+    'connecting',
     'data',
     'disconnect',
     'xml',
@@ -233,6 +234,11 @@ export class ConnectionTCP {
      */
     protected attemptEstablishConnection = (): void => {
         this._debug && console.log(`[node-vmix] Attempting to establish TCP socket connection to vMix instance ${this._host}:${this._port}`)
+
+        // Emit connecting event
+        this._listeners.connecting.forEach((cb: Function) => {
+            cb()
+        })
 
         // Attempt establishing connection
         this._socket.connect(this._port, this._host)
