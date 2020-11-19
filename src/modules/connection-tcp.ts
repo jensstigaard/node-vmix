@@ -540,14 +540,14 @@ export class ConnectionTCP {
      */
     protected functionCommandObjectToString = (command: Command): string => {
 
+        const cmdFunc = command.Function
         // Clone command and remove function name from command object
         // The command is injected as querystring
         const cmd: { [key: string]: any } = command
-
         delete cmd.Function
 
         // Prepare output string builder
-        const outputSB = ['FUNCTION', command.Function]
+        const outputSB = ['FUNCTION', cmdFunc]
 
         // Turn other command parameters into querystring
         if (Object.values(command).length) {
