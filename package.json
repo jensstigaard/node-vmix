@@ -29,12 +29,12 @@
   "dependencies": {
     "axios": "^0.21.0",
     "querystring": "^0.2.0",
-    "vmix-js-utils": "^3.8"
+    "vmix-js-utils": "^3.8.2"
   },
   "devDependencies": {
     "@types/node": "^14",
     "mocha": "^8.2.1",
-    "moxios": "^0.4.0",
-    "typescript": "^4.0.5"
+    "moxios": "^0.4",
+    "typescript": "^4"
   }
 }
