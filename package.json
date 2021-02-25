@@ -14,7 +14,7 @@
     "test": "mocha"
   },
   "repository": {
-    "private": false,
+    "private": true,
     "type": "git",
     "url": "git+https://github.com/jensstigaard/node-vmix.git"
   },
