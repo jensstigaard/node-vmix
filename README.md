@@ -35,6 +35,7 @@ connection.send('XML')
 // Ask to get tally info
 connection.send('TALLY')
 ```
+Note: One should check whether the connection is actually established before attempting sending message to the socket.
 
 
 # Purpose
