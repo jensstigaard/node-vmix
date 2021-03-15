@@ -4,6 +4,7 @@ import ConnectionTCP from './modules/connection-tcp'
 import ConnectionHTTP from './modules/connection-http'
 import CommandSenderHTTP from './modules/command-sender-http'
 
+// Alias
 const Connection = ConnectionTCP
 
 export default {
