@@ -35,11 +35,6 @@ export class ConnectionHTTP {
     }
 
     apiUrl(): string {
-        // For testing purposes
-        if (this.port === 1) {
-            return `http://localhost:${location.port}/data/vmix-data.xml`
-        }
-
         return `${this.webcontrollerUrl()}/api`
     }
 
