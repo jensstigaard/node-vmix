@@ -5,9 +5,7 @@ const { XmlApiDataParser, XmlInputMapper } = require('vmix-js-utils')
 
 // Set up vMix connection
 const connection = new ConnectionTCP('localhost')
-connection.on('connect', () => {
-  console.log('Connected')
-})
+
 connection.on('error', (error) => {
   console.error('Error', error)
 })
@@ -28,4 +26,10 @@ connection.on('xml', (xmlData) => {
   console.log(inputsList)
 })
 
-connection.send('XML')
+// Add on connect listener
+connection.on('connect', () => {
+  console.log('Connected')
+  
+  // As soon as connected, then send 'request' for XML data
+  connection.send('XML')
+})

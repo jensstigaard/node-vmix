@@ -6,9 +6,6 @@ const { ConnectionTCP } = require('../dist/index')
 const vMixAddress = 'localhost'
 const connection = new ConnectionTCP(vMixAddress)
 
-connection.on('connect', () => {
-  console.log('Connected')
-})
 connection.on('error', (error) => {
   console.error('Error', error)
 })
@@ -16,10 +13,16 @@ connection.on('data', data => {
   console.log('Got response with data:', data)
 })
 
-// Perform commands directly on connection
-// You can use any vMix Function here
-// List of all functions here: 
-// https://www.vmix.com/help22/ShortcutFunctionReference.html
+connection.on('connect', () => {
+  console.log('Connected')
+  
 
-// Perform a single command - a simple cut
-connection.send({ Function: 'Cut' })
+  // Now that we are connected
+  // Perform commands directly on connection
+  // You can use any vMix Function here
+  // List of all functions here: 
+  // https://www.vmix.com/help22/ShortcutFunctionReference.html
+
+  // Perform a single command - a simple cut
+  connection.send({ Function: 'Cut' })
+})

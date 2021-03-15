@@ -13,23 +13,26 @@ connection.on('data', data => {
   console.log('Got response with data:', data)
 })
 
+// connection.on('xml', console.log)
+
 connection.on('connect', () => {
   console.log('Connected!')
+  
+  // connection.send('xml')
+
+  // Now that we are connected
+  // Perform commands directly on connection
+  // You can use any vMix Function here
+  // List of all functions here: 
+  // https://www.vmix.com/help22/ShortcutFunctionReference.html
+
+  // Perform multiple commands at once:
+  connection.send([
+    // - On title on input with name 'MyTitle' - set text of field "TitleField" to the text "Updated text!"
+    { Function: 'SetText', Input: 'MyTitle', SelectedName: 'TitleField', Value: 'Updated text!' },
+    // - Transition in Input 3 on Overlay Channel 1
+    { Function: 'OverlayInput1In', Input: 3 },
+    // - Perform Cut to the input currently in preview
+    { Function: 'Cut' }
+  ])
 })
-// connection.on('xml', console.log)
-// connection.send('xml')
-
-// Perform commands directly on connection
-// You can use any vMix Function here
-// List of all functions here: 
-// https://www.vmix.com/help22/ShortcutFunctionReference.html
-
-// Perform multiple commands at once:
-connection.send([
-  // - On title on input with name 'MyTitle' - set text of field "TitleField" to the text "Updated text!"
-  { Function: 'SetText', Input: 'MyTitle', SelectedName: 'TitleField', Value: 'Updated text!' },
-  // - Transition in Input 3 on Overlay Channel 1
-  { Function: 'OverlayInput1In', Input: 3 },
-  // - Perform Cut to the input currently in preview
-  { Function: 'Cut' }
-])
