@@ -5,7 +5,7 @@ NodeJS vMix API utility to enable easy setup to communicate with vMix instance v
 It is recommended to use TCP, however, there is currently not implemented feedback/response.
 It is possible to implement this yourself if necessary, by analysing the responses, but it is not supported out of the box.
 
-[![package json version](https://img.shields.io/github/package-json/v/jensstigaard/node-vmix.svg)](https://www.github/jensstigaard/node-vmix)
+[![package json version](https://img.shields.io/github/package-json/v/jensstigaard/node-vmix.svg)](https://github.com/jensstigaard/node-vmix)
 [![npm version](https://badge.fury.io/js/node-vmix.svg)](https://www.npmjs.com/package/node-vmix)
 [![npm downloads](https://img.shields.io/npm/dm/node-vmix)](https://www.npmjs.com/package/node-vmix)
 
