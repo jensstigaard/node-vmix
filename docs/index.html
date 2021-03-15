@@ -70,6 +70,15 @@
 				<p><a href="https://npmjs.com/package/node-vmix"><img src="https://nodei.co/npm/node-vmix.png" alt="NPM Badge"></a></p>
 				<p>This code previously were found in the vmix-js-utils but are now branched out in its own package to enable usage of the vmix-js-utils to be used in a clean frontend environment (non-NodeJS), and also to give a better experience for the users. Are you looking for vMix utility for your js frontend? Take a look at <a href="https://github.com/jensstigaard/vmix-js-utils">vmix-js-utils</a> for more info.
 				Both packages are available with npm - see <a href="https://www.npmjs.com/~jensstigaard">my npm profile</a>.</p>
+				<a href="#purpose" id="purpose" style="color: inherit; text-decoration: none;">
+					<h1>Purpose</h1>
+				</a>
+				<p>node-vmix consists of two modules - one for TCP connection, one for HTTP.
+					Each can be used on its own, but usually it makes more sense to make it interplay with some of the other modules.
+				The modules are coded as classes, meaning that they are constructed with specific parameters, e.g. that the instanciation of a connection needs a host and a port.</p>
+				<a href="#quick-start" id="quick-start" style="color: inherit; text-decoration: none;">
+					<h1>Quick start</h1>
+				</a>
 				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">ConnectionTCP</span><span style="color: #000000"> } = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;node-vmix&#039;</span><span style="color: #000000">)</span>
 
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">connection</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">ConnectionTCP</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;localhost&#039;</span><span style="color: #000000">)</span>
@@ -90,53 +99,12 @@
 <span style="color: #008000">// Ask to get tally info</span>
 <span style="color: #001080">connection</span><span style="color: #000000">.</span><span style="color: #795E26">send</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;TALLY&#039;</span><span style="color: #000000">)</span>
 </code></pre>
-				<a href="#purpose" id="purpose" style="color: inherit; text-decoration: none;">
-					<h1>Purpose</h1>
+				<p>Note: One should check whether the connection is actually established before attempting sending message to the socket.</p>
+				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
+					<h1>Documentation</h1>
 				</a>
-				<p>The utilities consists of several modules. Each can be used on its own, but usually it makes more sense to make it interplay with some of the other modules.
-				The modules is as following:</p>
-				<ul>
-					<li><a href="#connectiontcp">ConnectionTCP</a> (recommended)</li>
-					<li><a href="#connection-http">ConnectionHTTP</a></li>
-				</ul>
-				<p>The modules are coded as classes, meaning that they are constructed with specific parameters, e.g. that the instanciation of a connection needs a host and a port. </p>
-				<a href="#description-of-modules" id="description-of-modules" style="color: inherit; text-decoration: none;">
-					<h1>Description of modules</h1>
-				</a>
-				<a href="#connectiontcp" id="connectiontcp" style="color: inherit; text-decoration: none;">
-					<h2>ConnectionTCP</h2>
-				</a>
-				<p>The &#39;ConnectionTCP&#39; module is the core of the utils, and allows you to establish communication to a vMix instance.
-				It let you define which vMix TCP endpoint you want to receive from and send commands to, by passing the IP address to the constructor. You are also able to pass a custom port if it is not using the default port 8099. </p>
-				<hr>
-				<p><code>.send(commands)</code></p>
-				<p>Parameters:</p>
-				<ul>
-					<li><strong>commands</strong>: <code>{Array|Object|String}</code> - Array, Object or String of the command(s) to be send. Commands parsed as objects are treated as commands that is executing as FUNCTION. These fust include the Function parameter, e.g. &#39;Cut&#39;. The object may also include other parameters such as Input, Value, or any necessary parameters for the command.</li>
-				</ul>
-				<p><code>.on(type, callback)</code></p>
-				<p>Parameters:</p>
-				<ul>
-					<li><strong>type</strong>: <code>{String}</code> - Which event to listen for? Available types: xmlData, data, connect, error</li>
-					<li><strong>callback</strong>: <code>{Function}</code> - What should happen on the event? </li>
-				</ul>
-				<p>It allows you to listen for incoming messages received on the socket.</p>
-				<p>Use <code>.on(&#39;activators&#39;, (message: string) =&gt; { ... })</code> to receive messages regarding activators of vMix instance. See examples below for how to parse the xml data received into usable data structures.</p>
-				<p>Use <code>.on(&#39;tally&#39;, (tallyString: string) =&gt; { ... })</code> to receive messages regarding tally updates for vMix instance. See examples below for how to parse the xml data received into usable data structures.</p>
-				<p>Use <code>.on(&#39;xml&#39;, (xmlData: string) =&gt; { ... })</code> to receive XML data of the vMix state. See examples below for how to parse the xml data received into usable data structures.</p>
-				<p>Use <code>.on(&#39;data&#39;, (message: string) =&gt; { ... })</code> to receive all data from the socket. Will also receive Tally, Activators and XML responses if no listener for these events is registered.</p>
-				<hr>
-				<a href="#connectionhttp" id="connectionhttp" style="color: inherit; text-decoration: none;">
-					<h2>ConnectionHTTP</h2>
-				</a>
-				<p>The &#39;ConnectionHTTP&#39; module is a utility to communicate with a vMix instance using HTTP. This is however not recommended.</p>
-				<hr>
-				<a href="#statefetcher" id="statefetcher" style="color: inherit; text-decoration: none;">
-					<h2>StateFetcher</h2>
-				</a>
-				<p>Being deprecated.
-				Fetches the current state of the vMix instance.</p>
-				<hr>
+				<p>Please visit the documentation here: <a href="https://jensstigaard.github.io/node-vmix/">https://jensstigaard.github.io/node-vmix/</a>.</p>
+				<p>The documentation includes definition and description of classes and type.</p>
 				<a href="#installation-and-use" id="installation-and-use" style="color: inherit; text-decoration: none;">
 					<h2>Installation and use</h2>
 				</a>
