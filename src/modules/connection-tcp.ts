@@ -7,7 +7,7 @@ import { TcpTally } from 'vmix-js-utils'
 // Types
 import { Command } from '../types/command'
 
-// Exceptions
+// Custom Exceptions
 import ApiUrlError from '../exceptions/api-url-error'
 
 const SOCKET_BASE_LISTENER_TYPES = [
@@ -46,12 +46,12 @@ const NEWLINE_CHAR_LENGTH = 2
 /**
  * vMix Connection via TCP
  * 
- * vMix TCP API docs
- * https://www.vmix.com/help22/TCPAPI.html
- * 
- * Node.js TCP client / server
- * https://gist.github.com/sid24rane/2b10b8f4b2f814bd0851d861d3515a10
  */
+// vMix TCP API docs
+// https://www.vmix.com/help22/TCPAPI.html
+//
+// Inspiration from: Github Gist: Node.js TCP client / server
+// https://gist.github.com/sid24rane/2b10b8f4b2f814bd0851d861d3515a10
 export class ConnectionTCP {
 
     protected _host: string
@@ -178,7 +178,7 @@ export class ConnectionTCP {
     // /////////////////////
 
     /**
-     * Establish connection
+     * Attempt establish connection
      */
     protected attemptEstablishConnection = (): void => {
         this._debug && console.log(`[node-vmix] Attempting to establish TCP socket connection to vMix instance ${this._host}:${this._port}`)
