@@ -14,6 +14,13 @@ It is possible to implement this yourself if necessary, by analysing the respons
 This code previously were found in the vmix-js-utils but are now branched out in its own package to enable usage of the vmix-js-utils to be used in a clean frontend environment (non-NodeJS), and also to give a better experience for the users. Are you looking for vMix utility for your js frontend? Take a look at [vmix-js-utils](https://github.com/jensstigaard/vmix-js-utils) for more info.
 Both packages are available with npm - see [my npm profile](https://www.npmjs.com/~jensstigaard).
 
+# Purpose
+node-vmix consists of two modules - one for TCP connection, one for HTTP.
+Each can be used on its own, but usually it makes more sense to make it interplay with some of the other modules.
+The modules are coded as classes, meaning that they are constructed with specific parameters, e.g. that the instanciation of a connection needs a host and a port.
+
+
+# Quick start
 ```javascript
 const { ConnectionTCP } = require('node-vmix')
 
@@ -38,20 +45,13 @@ connection.send('TALLY')
 Note: One should check whether the connection is actually established before attempting sending message to the socket.
 
 
-# Purpose
-The utilities consists of several modules. Each can be used on its own, but usually it makes more sense to make it interplay with some of the other modules.
-The modules is as following:
- - [ConnectionTCP](#connectiontcp) (recommended)
- - [ConnectionHTTP](#connection-http)
-
-The modules are coded as classes, meaning that they are constructed with specific parameters, e.g. that the instanciation of a connection needs a host and a port. 
-
 
 # Documentation
 
 Please visit the documentation here: https://jensstigaard.github.io/node-vmix/.
 
 The documentation includes definition and description of classes and type.
+
 
 ## Installation and use
 ### As a dependency using npm
@@ -88,7 +88,7 @@ connection2.send({ Function: 'Merge' })
 
 
 # Examples and use
-## Electron example 
+## Electron example
 Looking for a full blown example project? See the repositories:
  * [audio-matrix-vmix-electron](https://github.com/jensstigaard/audio-matrix-vmix-electron)
  * [simple-vmix-switcher-electron](https://github.com/jensstigaard/simple-vmix-switcher-electron)
