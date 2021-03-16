@@ -2,7 +2,7 @@
 // Note: when using npm swap in: 'node-vmix' instead of '../index'
 const { ConnectionTCP } = require('../dist/index')
 
-const { XmlApiDataParser, XmlInputMapper } = require('vmix-js-utils')
+const { XmlApi } = require('vmix-js-utils')
 
 // Modules
 const connection = new ConnectionTCP('localhost')
@@ -13,16 +13,18 @@ connection.on('data', data => {
     console.log('On data', data)
 })
 connection.on('xml', data => {
-    // Manipulate data
-    let xmlContent = XmlApiDataParser.parse(data)
-    let inputs = XmlInputMapper.extractInputsFromXML(xmlContent)
-    let inputsMap = XmlInputMapper.mapInputs(inputs)
-    let inputsList = Object.values(inputsMap)
+    // console.log('Received XML data')
 
-    console.log('On XML - Number of inputs:', inputsList.length)
+    // Manipulate the raw data to be used as list
+    const xmlContent = XmlApi.DataParser.parse(data)
+    const inputs = XmlApi.InputMapping.extractInputsFromXML(xmlContent)
+    const inputsMap = XmlApi.InputMapping.mapInputs(inputs)
+    const inputsList = Object.values(inputsMap)
+
+    console.log('Parsed XML state - Number of inputs:', inputsList.length)
 })
 connection.on('tally', tally => {
-    console.log('On Tally', tally)
+    console.log('Tally message received', tally)
 })
 
 connection.on('error', error => {
@@ -30,6 +32,13 @@ connection.on('error', error => {
     console.error(error)
 })
 
-// Fetch XML data from vMix API
-connection.send('TALLY')
-connection.send('tally')
+// Upon connection
+connection.on('connect', () => {
+    // Request XML data from vMix API
+    connection.send('xml')
+
+    // Request tally
+    // Case insensitive command name
+    connection.send('TALLY')
+    connection.send('tally')
+})
