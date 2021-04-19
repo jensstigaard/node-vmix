@@ -106,13 +106,17 @@ Looking for a full blown example project? See the repositories:
 These apps are using this library for vMix connection. They are built with ElectronJS and can be compiled for both Windows, Mac or Linux platforms.
 
 ## Code snippet examples
-Review index.js for some basic example of how to use the utilities
- * Send
-   * [Send single command example](../../blob/master/examples/send-single-command.js)
-   * [Send multiple commands example](../../blob/master/examples/send-multiple-commands.js)
-   * [Send multiple commands mixed strings/objects example](../../blob/master/examples/send-multiple-commands-mixed.js)
- * Retrieve
-   * [Retrieve all inputs from vMix state - Basic example](../../blob/master/examples/read-state-basic.js)
+Here are some basic example of how to use the library
+### Connection TCP
+ * Send API commands (functions)
+   * [Send single command example](../../blob/master/examples/connection-tcp/send-commands/single.js)
+   * [Send multiple commands example](../../blob/master/examples/connection-tcp/send-commands/multiple.js)
+   * [Send multiple commands mixed strings/objects example](../../blob/master/examples/connection-tcp/send-commands/multiple-mixed.js)
+ * Read XML API
+   * [Retrieve all inputs from vMix XML state - Basic example](../../blob/master/examples/read-xml-state-basic.js)
+ * Misc
+   * [Read or subscribe to tally](../../blob/master/examples/connection/tcp/tally.js)
+   * [vMix version](../../blob/master/examples/connection/tcp/get-vmix-version.js)
 
 
 Legacy:

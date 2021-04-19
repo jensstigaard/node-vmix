@@ -6,12 +6,9 @@ const { XmlApi } = require('vmix-js-utils')
 // Set up vMix connection
 const connection = new ConnectionTCP('localhost')
 
-connection.on('error', (error) => {
-  console.error('Error', error)
-})
-
-// Register callback on xml data
+// Register callback on 'xml'-events
 // When data is fetched, what to do with it?
+// Parse it into easy usable array of objects with input
 connection.on('xml', (xmlData) => {
   // Parse xml content
   const xmlContent = XmlApi.DataParser.parse(xmlData)
@@ -19,26 +16,17 @@ connection.on('xml', (xmlData) => {
   // Extract input data and
   // manipulate to desired format
   const inputsRawData = XmlApi.InputMapping.extractInputsFromXML(xmlContent)
-  const inputsMap = XmlApi.InputMapping.mapInputs(inputsRawData)
-  const inputsList = Object.values(inputsMap)
+  const inputs = XmlApi.InputMapping.mapInputs(inputsRawData)
 
   // Now you have a list of inputs
-  console.log(inputsList)
+  console.log(inputs)
 })
 
 // Add on connect listener
 connection.on('connect', () => {
   console.log('Connected')
 
-  // As soon as connected, then send 'request' for XML data
+  // As soon as connected, then send request to receive XML state data
   connection.send('XML')
 })
-
-connection.connect().then(() => console.log('Connected once!'))
-
-console.log(connection.connected() ? 'Connected' : 'Not connected')
-
-setInterval(() => {
-  console.log(connection.connected() ? 'Connected' : 'Not connected')
-}, 2000)
 
