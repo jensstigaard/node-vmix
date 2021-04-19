@@ -8,7 +8,7 @@ import ApiUrlError from '../exceptions/api-url-error'
  * 
  * vMix HTTP Web API
  * 
- * https://www.vmix.com/help22/DeveloperAPI.html
+ * https://www.vmix.com/help24/DeveloperAPI.html
  */
 export class ConnectionHTTP {
     protected host: string
