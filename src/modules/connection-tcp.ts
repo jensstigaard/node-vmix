@@ -722,6 +722,25 @@ export class ConnectionTCP {
     }
 
     /**
+     * Deregister listener on a specific event type
+     *
+     * @param {string} type
+     * @param {Function} callback
+     */
+    off(type: string, callback: Function): void {
+        const desiredListenerType = type.toLowerCase()
+
+        // All available listener types
+        const availableListenerTypes = SOCKET_BASE_LISTENER_TYPES.concat(CUSTOM_LISTENER_TYPES)
+
+        if (!availableListenerTypes.includes(desiredListenerType)) {
+            throw new Error(`Invalid type of listener... '${type}'`)
+        }
+
+        this._listeners[desiredListenerType] = this._listeners[desiredListenerType].filter((listener) => listener !== callback);
+    }
+
+    /**
      * Ask to Shutdown and destroy the TCP socket
      */
     shutdown(): void {
