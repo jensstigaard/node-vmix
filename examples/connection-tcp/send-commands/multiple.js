@@ -20,7 +20,7 @@ connection.on('connect', () => {
   // Perform commands directly on connection
   // You can use any vMix Function here
   // List of all functions here: 
-  // https://www.vmix.com/help22/ShortcutFunctionReference.html
+  // https://www.vmix.com/help24/ShortcutFunctionReference.html
 
   // Perform multiple commands at once:
   connection.send([
