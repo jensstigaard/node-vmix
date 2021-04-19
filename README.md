@@ -31,16 +31,24 @@ connection.on('xml', xmlData => {
  // Your logic here!
  // See example to parse the XML correctly
 })
+
+// Listener for tally
+connection.on('tally', tally => {
+ // Your logic here!
+})
+
 // Listener for data such as tally
 connection.on('data', data => {
  // Your logic here!
 })
 
-// Ask to get vMix state in XML
-connection.send('XML')
+connection.on('connect', () => {
+  // Request vMix API XML state by sending message 'XML'
+  connection.send('XML')
 
-// Ask to get tally info
-connection.send('TALLY')
+  // Request vMix tally info by sending message 'TALLY'
+  connection.send('TALLY')
+})
 ```
 Note: One should check whether the connection is actually established before attempting sending message to the socket.
 
@@ -58,14 +66,15 @@ The documentation includes definition and description of classes and type.
 The utilities are published at npmjs as a package for NodeJS, meaning that you can easily add the utilities as a dependency in your NodeJS project.
 Found here: https://www.npmjs.com/package/node-vmix
 ```sh
-npm install node-vmix --save # or 'yarn add node-vmix'
+npm install node-vmix --save
+# or 'yarn add node-vmix'
 ```
 
 In your code the simplest way to import the modules is the following:
 
 ```javascript
 const { Connection } = require('node-vmix')
-// or   import { Connection } from 'node-vmix'
+// or ES6 import syntax:  import { Connection } from 'node-vmix'
 
 const connection1 = new Connection('localhost')
 const connection2 = new Connection('192.168.1.50')
