@@ -28,6 +28,7 @@ const SOCKET_BASE_LISTENER_TYPES = [
 const CUSTOM_MESSAGES_TYPES = [
     'tally', // TALLY
     'acts', // ACTS - Activators
+    'version', // vMix version info
 ]
 
 
@@ -66,7 +67,7 @@ const NEWLINE_CHAR_BYTE_LENGTH = 2
 // vMix TCP API docs
 // https://www.vmix.com/help24/TCPAPI.html
 //
-// NodeJS Net Socket
+// Internally using NodeJS Net Socket
 // https://nodejs.org/api/net.html#net_new_net_socket_options
 //
 // With inspiration from: Github Gist: Node.js TCP client / server
@@ -100,9 +101,28 @@ export class ConnectionTCP {
     // protected _connectTimeoutDuration: number = 5000
     // protected _connectTimeout: NodeJS.Timeout | null = null
 
-    // Print debug messages? Disabled by default
+    /**
+     * Emit vMix messages to listeners registered for data
+     * as a fallback solution if no listener is registered 
+     * in the specific custom-listener-type
+     * 
+     * Enabled by default
+     */
+    protected _useDataListenersAsFallback = true
+
+    /*
+     * Print debug messages
+     *
+     * Disabled by default
+     */
     protected _debug: boolean = false
-    protected _debugBuffers: boolean = false
+
+    /**
+     * Print debug messages regarding buffer
+     * 
+     * Disabled by default
+     */
+    protected _debugBuffer: boolean = false
 
     /**
      * Constructor
@@ -117,9 +137,9 @@ export class ConnectionTCP {
             connectOnInitialization?: boolean,
             debug?: boolean,
             debugBuffers?: boolean,
-            fallbackListener?: boolean,
             onDataCallback?: Function,
             port?: number,
+            useDataListenersAsFallback?: boolean,
         } = {}
     ) {
         // Guard passed options of wrong type
@@ -133,7 +153,7 @@ export class ConnectionTCP {
         }
         // Set debug flag if parsed in options - disabled as default
         if ('debugBuffers' in options && typeof options.debugBuffers === 'boolean' && options.debugBuffers) {
-            this._debugBuffers = true
+            this._debugBuffer = true
         }
 
         this._debug && console.log('[node-vmix] Instanciating TCP socket to vMix instance', host)
@@ -181,8 +201,6 @@ export class ConnectionTCP {
         this._socket.on('connect', () => {
             this._debug && console.log('[node-vmix] Connected to vMix instance via TCP socket', this._host)
 
-            this._listeners.connect.forEach(cb => cb())
-
             // this._isRetrying = false
 
             // if (this._connectTimeout) {
@@ -223,9 +241,9 @@ export class ConnectionTCP {
         // On data listener
         // Put data into buffer and try to process data
         this._socket.on('data', (data: Buffer) => {
-            this._debugBuffers && console.log('[node-vmix] Received data from vMix instance via socket connection')
-            this._debugBuffers && console.log(data)
-            this._debugBuffers && console.log('----------------')
+            this._debugBuffer && console.log('[node-vmix] Received data from vMix instance via socket connection')
+            this._debugBuffer && console.log(data)
+            this._debugBuffer && console.log('----------------')
 
             this._buffer = Buffer.concat([this._buffer, data])
             this._processBuffer()
@@ -348,7 +366,7 @@ export class ConnectionTCP {
 
         const firstMessageLength = Buffer.from(firstMessage).byteLength
 
-        this._debugBuffers && console.log('[node-vmix] Reading buffer message:', firstMessage)
+        this._debugBuffer && console.log('[node-vmix] Reading buffer message:', firstMessage)
         // this._debugBuffers && console.log(
         //     'Length of first message in buffer',
         //     `"${firstMessage}"`,
@@ -374,26 +392,30 @@ export class ConnectionTCP {
         firstMessage: string,
         firstMessageByteLength: number,
     ): void {
-        this._debugBuffers && console.log('[node-vmix] Processing non-XML message:', firstMessage)
+        this._debugBuffer && console.log('[node-vmix] Processing non-XML message:', firstMessage)
 
         // If message status is Error then emit as regular message
         if (messageStatus === 'ER') {
-            this._debugBuffers && console.log('[node-vmix] Emitting error message:', firstMessage)
+            this._debugBuffer && console.log('[node-vmix] Emitting error message:', firstMessage)
             this._emitMessage(firstMessage)
         } else {
 
 
             const messageTypeLower = messageType.toLowerCase()
 
-            this._debugBuffers && console.log('[node-vmix] Handling custom message:', messageType)
+            this._debugBuffer && console.log('[node-vmix] Handling custom message:', messageType)
 
             switch (messageTypeLower) {
+                case 'activators':
+                    this.emitActivatorsMessage(firstMessage)
+                    break
                 case 'tally':
                     // console.log('Not an XML message - instead a message of type', messageType)
                     this._emitTallyMessage(firstMessage)
                     break
-                case 'activators':
-                    this.emitActivatorsMessage(firstMessage)
+                case 'version':
+                    // console.log('Not an XML message - instead a message of type', messageType)
+                    this._emitVersionMessage(firstMessage)
                     break
                 default:
                     this._emitMessage(firstMessage)
@@ -481,47 +503,81 @@ export class ConnectionTCP {
     }
 
     /**
-     * Emit Tally message
-     */
-    protected _emitTallyMessage = (message: string): void => {
-
-        const listeners = this._listeners.tally
-
-        // If no tally-listeners were registered then
-        // fallback to emit the xml message as generic message
-        if (!listeners.length) {
-            return this._emitMessage(message)
-        }
-
-        this._debug && console.log('Tally string: ', message)
-
-        const tallyString = message
-            .replace('TALLY OK ', '')
-
-        const summary = TcpTally.extractSummary(tallyString)
-
-        // Tap callback listeners with tally summary
-        listeners.forEach((cb: Function) => {
-            cb(summary)
-        })
-    }
-
-    /**
      * Emit Activators message
      */
     protected emitActivatorsMessage = (message: string): void => {
         const listeners = this._listeners.activators
 
-        // If no activators-listeners were registered then
-        // fallback to emit the xml message as generic message
-        if (!listeners.length) {
-            return this._emitMessage(message)
+        if (listeners.length) {
+            // Tap callback listeners with tally summary
+            listeners.forEach((cb: Function) => {
+                cb(message)
+            })
+            return
         }
 
-        // Tap callback listeners with tally summary
-        listeners.forEach((cb: Function) => {
-            cb(message)
-        })
+        // If no activators-listeners were registered then
+        // fallback to emit the message as generic message if enabled
+        if (this._useDataListenersAsFallback) {
+            return this._emitMessage(message)
+        }
+    }
+
+    /**
+     * Emit Tally message
+     */
+    protected _emitTallyMessage = (message: string): void => {
+        const listeners = this._listeners.tally
+
+        if (listeners.length) {
+            this._debug && console.log('Tally string: ', message)
+
+            const tallyString = message
+                .replace('TALLY OK ', '')
+
+            const summary = TcpTally.extractSummary(tallyString)
+
+            // Tap callback listeners with tally summary
+            listeners.forEach((cb: Function) => {
+                cb(summary)
+            })
+
+            return
+        }
+
+        // If no tally-listeners were registered then
+        // fallback to emit the message as generic message if enabled
+        if (this._useDataListenersAsFallback) {
+            return this._emitMessage(message)
+        }
+    }
+
+
+    /**
+     * Emit Version message
+     */
+    protected _emitVersionMessage = (message: string): void => {
+        const listeners = this._listeners.version
+
+        // If no version-listeners were registered then
+        // fallback to emit the xml message as generic message
+        if (listeners.length) {
+            this._debug && console.log('Version message raw string: ', message)
+
+            const versionString = message
+                .replace('VERSION OK ', '')
+
+            // Tap callback listeners with tally summary
+            listeners.forEach((cb: Function) => {
+                cb(versionString)
+            })
+        }
+
+        // If no version-listeners were registered then
+        // fallback to emit the message as generic message if enabled
+        if (this._useDataListenersAsFallback) {
+            return this._emitMessage(message)
+        }
     }
 
     /**
@@ -532,14 +588,18 @@ export class ConnectionTCP {
 
         // If no xmlData listeners were registered then
         // fallback to emit the xml message as generic message
-        if (!listeners || !listeners.length) {
-            return this._emitMessage(message)
+        if (listeners.length) {
+            // Tap callback listeners with message
+            listeners.forEach((cb: Function) => {
+                cb(message)
+            })
         }
 
-        // Tap callback listeners with message
-        listeners.forEach((cb: Function) => {
-            cb(message)
-        })
+        // If no tally-listeners were registered then
+        // fallback to emit the message as generic message if enabled
+        if (this._useDataListenersAsFallback) {
+            return this._emitMessage(message)
+        }
     }
 
 
@@ -550,7 +610,6 @@ export class ConnectionTCP {
      * @returns {string}
      */
     protected functionCommandObjectToString = (command: vMixApiFunctionCommand): string => {
-
         const cmdFunc = command.Function
         // Clone command and remove function name from command object
         // The command is injected as querystring
@@ -572,9 +631,10 @@ export class ConnectionTCP {
     }
 
     /**
-     * Stringify commands if necessary
-     * @param {vMixApiFunctionCommand|string} command
+     * Stringify commands
+     * (if necessary)
      * 
+     * @param {vMixApiFunctionCommand|string} command
      * @returns {string}
      */
     protected stringifyCommand = (command: vMixApiFunctionCommand | string): string => {
@@ -585,11 +645,22 @@ export class ConnectionTCP {
         }
 
         // First word must be uppercase always
+        // Get index of first space and upper case all characters until this index
         const indexFirstSpace = command.indexOf(' ')
+
+        // If no spaces at all, just return upper cased word
         if (indexFirstSpace === -1) {
             return command.toUpperCase()
         }
-        command = command.slice(0, indexFirstSpace + 1).toUpperCase() + command.slice(indexFirstSpace + 1)
+
+        command = [
+            // First word upper cased
+            command.slice(0, indexFirstSpace + 1).toUpperCase(),
+            // Rest of message
+            command.slice(indexFirstSpace + 1),
+        ].join('')
+
+        // console.log('COMMAND', command)
 
         return command
     }
@@ -617,7 +688,7 @@ export class ConnectionTCP {
      * @param {String} message 
      * @returns {Promise}
      */
-    protected sendMessageToSocket = async (message: string) => {
+    protected _sendMessageToSocket = async (message: string) => {
         this._debug && console.log('[node-vmix] Sending message to vMix instance via socket', message)
 
         // Guard connected
@@ -635,7 +706,7 @@ export class ConnectionTCP {
     }
 
     // ///////////////////////////////
-    // Private/protected methods end
+    // Protected/private methods end
     // /////////////////////////////
 
 
@@ -648,7 +719,7 @@ export class ConnectionTCP {
      * 
      * Attempt to establish connection to socket of vMix instance
      */
-    connect = async (host?: string, port?: number) => {
+    async connect(host?: string, port?: number) {
         this._debug && console.log(`[node-vmix] Attempting to establish TCP socket connection to vMix instance ${this._host}:${this._port}`)
 
         if (this.connected()) {
@@ -663,7 +734,7 @@ export class ConnectionTCP {
             this._setPort(port)
         }
 
-        // Emit connecting event
+        // Emit 'connecting'-event
         this._listeners.connecting.forEach(cb => cb())
 
         // Attempt establishing connection
@@ -682,12 +753,13 @@ export class ConnectionTCP {
      * or a array of strings or objects (or a mix of object or strings) 
      * 
      * The available commands are listed under:
-     * https://www.vmix.com/help22/TCPAPI.html 
+     * https://www.vmix.com/help24/TCPAPI.html 
      * See "Commands section"
      * 
-     * @param {string|string[]|vMixApiFunctionCommand|vMixApiFunctionCommand[]} commands 
+     * @param {string|string[]|vMixApiFunctionCommand|vMixApiFunctionCommand[]} commands
+     * 
      */
-    send(command: string | vMixApiFunctionCommand | vMixApiFunctionCommand[]): void {
+    async send(command: string | string[] | vMixApiFunctionCommand | vMixApiFunctionCommand[]) {
         // Guard socket connected
         if (!this.connected()) {
             throw new Error('[node-vmix] Tried to send commands without open socket...')
@@ -696,10 +768,13 @@ export class ConnectionTCP {
         const commands: (vMixApiFunctionCommand | string)[] = !Array.isArray(command) ? [command] : command
 
         // Stringify each command (if necessary) and send these as 
-        // single messages on TCP socket to vMix instance
-        commands
-            .map(this.stringifyCommand)
-            .map(this.ensureMessageEnding)
+        // A concatenated message on TCP socket to vMix instance
+        return this._sendMessageToSocket(
+            commands
+                .map(this.stringifyCommand)
+                .map(this.ensureMessageEnding)
+                .join('')
+        )
     }
 
     /**
@@ -722,22 +797,38 @@ export class ConnectionTCP {
     }
 
     /**
-     * Deregister listener on a specific event type
+     * Unregister listeners of specific event-type and with a specific callback function-signature
      *
-     * @param {string} type
-     * @param {Function} callback
+     * @param {string?} listenerType
+     * @param {Function?} callbackSignature
      */
-    off(type: string, callback: Function): void {
-        const desiredListenerType = type.toLowerCase()
+    off(listenerType: string, callbackSignature: Function): void {
+        const desiredListenerType = listenerType.toLowerCase()
 
         // All available listener types
         const availableListenerTypes = SOCKET_BASE_LISTENER_TYPES.concat(CUSTOM_LISTENER_TYPES)
 
         if (!availableListenerTypes.includes(desiredListenerType)) {
-            throw new Error(`Invalid type of listener... '${type}'`)
+            throw new Error(`Invalid type of listener... '${listenerType}'`)
         }
 
-        this._listeners[desiredListenerType] = this._listeners[desiredListenerType].filter((listener) => listener !== callback);
+        // Remove listeners of specific callback method signature
+        this._listeners[desiredListenerType] = this._listeners[desiredListenerType].filter((listener) => listener !== callbackSignature)
+    }
+
+
+    /**
+     * Unregister all listeners
+     */
+    clearAllListeners = (): void => {
+        // All available listener types
+        const availableListenerTypes = SOCKET_BASE_LISTENER_TYPES.concat(CUSTOM_LISTENER_TYPES)
+
+        // Iterate through all available listener type
+        availableListenerTypes.forEach(listenerType => {
+            // Unregister all listener by resetting array for each type of listener
+            this._listeners[listenerType] = []
+        })
     }
 
     /**
@@ -751,12 +842,15 @@ export class ConnectionTCP {
         //     this._reconnectionInterval = null
         // }
 
-        // if (this._socket) {
-        //     // kill client after server's response
-        //     this.send('quit')
-        //     this._socket.destroy()
-        //     this._socket = null
-        // }
+        if (this.connected()) {
+            // Gently close socket by sending QUIT message
+            this.send('QUIT').then(() => {
+                this._socket.destroy()
+            })
+            return
+        }
+        this._socket.destroy()
+
     }
 
     /**
