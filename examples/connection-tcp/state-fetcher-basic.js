@@ -1,6 +1,6 @@
 // Import modules from the package
 // Note: when using npm swap in: 'node-vmix' instead of '../index'
-const { ConnectionTCP } = require('../dist/index')
+const { ConnectionTCP } = require('../../dist/index')
 
 const { XmlApi } = require('vmix-js-utils')
 

@@ -1,10 +1,10 @@
 // Import modules from the package
 // Note: when using npm swap in: 'node-vmix' instead of '../index'
-const { ConnectionHTTP, CommandSenderHTTP } = require('../dist/index').default
+const { ConnectionHTTP, CommandSenderHTTP } = require('../../dist/index').default
 
 // Instanciate objects
-let connection = new ConnectionHTTP('localhost', 8088)
-let commandSender = new CommandSenderHTTP(connection)
+const connection = new ConnectionHTTP('localhost', 8088)
+const commandSender = new CommandSenderHTTP(connection)
 
 // Perform commands
 // You can use any vMix Function here

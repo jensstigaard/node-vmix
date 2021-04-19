@@ -1,6 +1,6 @@
 // Import modules from the package
 // Note when using as npm dep: swap in: 'node-vmix' instead of '../index'
-const { ConnectionTCP } = require('../dist/index')
+const { ConnectionTCP } = require('../../dist/index')
 
 // Instanciate connection to vMix instance via TCP localhost:8099
 const vMixAddress = 'localhost'
@@ -13,12 +13,9 @@ connection.on('data', data => {
   console.log('Got response with data:', data)
 })
 
-// connection.on('xml', console.log)
-
 connection.on('connect', () => {
-  console.log('Connected!')
+  console.log('Connected')
   
-  // connection.send('xml')
 
   // Now that we are connected
   // Perform commands directly on connection
@@ -26,13 +23,6 @@ connection.on('connect', () => {
   // List of all functions here: 
   // https://www.vmix.com/help22/ShortcutFunctionReference.html
 
-  // Perform multiple commands at once:
-  connection.send([
-    // - On title on input with name 'MyTitle' - set text of field "TitleField" to the text "Updated text!"
-    { Function: 'SetText', Input: 'MyTitle', SelectedName: 'TitleField', Value: 'Updated text!' },
-    // - Transition in Input 3 on Overlay Channel 1
-    { Function: 'OverlayInput1In', Input: 3 },
-    // - Perform Cut to the input currently in preview
-    { Function: 'Cut' }
-  ])
+  // Perform a single command - a simple cut
+  connection.send({ Function: 'Cut' })
 })

@@ -5,11 +5,14 @@ import querystring from 'querystring'
 import { TcpTally } from 'vmix-js-utils'
 
 // Types
-import { Command } from '../types/command'
+import { vMixApiFunctionCommand } from '../types/api-command'
 
 // Custom Exceptions
 import ApiUrlError from '../exceptions/api-url-error'
 
+/**
+ * Base socket listener types
+ */
 const SOCKET_BASE_LISTENER_TYPES = [
     'close',
     'connect',
@@ -27,20 +30,33 @@ const CUSTOM_MESSAGES_TYPES = [
     'acts', // ACTS - Activators
 ]
 
+
 const CUSTOM_LISTENER_TYPES = [
     'connecting',
     'data',
-    'disconnect',
+    // 'disconnect',
     'xml',
     ...CUSTOM_MESSAGES_TYPES
 ]
 
-// Port used by vMix is 8099
-// But it can be other port if the connection is through a firewall
+export type VMIX_TCP_MESSAGE_TYPES = 'tally' | 'acts' | 'xml'
+
+/**
+ * Default hostname of vMix instance
+ * When nothing passed to connection class-instance
+ */
+const DEFAULT_HOST = 'localhost'
+
+/**
+ * Default port used by vMix to serve TCP connections is 8099
+ * But it can be other port if the connection is through a firewall
+ */
 const DEFAULT_TCP_PORT = 8099
 
-// Length in bytes of CRLF (New Line character on Microsoft Windows) "\r\n"
-const NEWLINE_CHAR_LENGTH = 2
+/**
+ * Length in bytes of CRLF (New Line character on Microsoft Windows) "\r\n"
+ */
+const NEWLINE_CHAR_BYTE_LENGTH = 2
 
 
 /**
@@ -48,59 +64,68 @@ const NEWLINE_CHAR_LENGTH = 2
  * 
  */
 // vMix TCP API docs
-// https://www.vmix.com/help22/TCPAPI.html
+// https://www.vmix.com/help24/TCPAPI.html
 //
-// Inspiration from: Github Gist: Node.js TCP client / server
+// NodeJS Net Socket
+// https://nodejs.org/api/net.html#net_new_net_socket_options
+//
+// With inspiration from: Github Gist: Node.js TCP client / server
 // https://gist.github.com/sid24rane/2b10b8f4b2f814bd0851d861d3515a10
 export class ConnectionTCP {
 
-    protected _host: string
-    protected _port: number
+    protected _host: string = DEFAULT_HOST
+    protected _port: number = DEFAULT_TCP_PORT
 
-    // Buffer to store byte array of current incoming message
+    // Buffer to store byte array of currently incoming messages
     protected _buffer: Buffer = Buffer.from([])
 
-    // TCP socket to vMix instance
-    protected _socket: Socket | null = null
+    /**
+     * Node TCP socket client to vMix instance
+     */
+    protected _socket: Socket = new Socket()
 
+    /**
+     * All listeners
+     */
     protected _listeners: { [key: string]: Function[] } = {}
 
     // Auto reconnect? Enabled by default
-    protected _autoReconnect: boolean = true
+    // protected _autoReconnect: boolean = true
 
-    protected _isConnected: boolean = false
-    protected _isRetrying: boolean = false
-    protected _reconnectionIntervalTimeout: number = 10000
-    protected _reconnectionInterval: NodeJS.Timeout | null = null
+    // protected _isRetrying: boolean = false
+    // protected _reconnectionIntervalTimeout: number = 10000
+    // protected _reconnectionInterval: NodeJS.Timeout | null = null
 
-    // Timeout for establishing the connection. Should be smaller than the reconnect invterval!
-    protected _connectTimeoutDuration: number = 5000
-    protected _connectTimeout: NodeJS.Timeout | null = null
+    // // Timeout for establishing the connection. Should be smaller than the reconnect invterval!
+    // protected _connectTimeoutDuration: number = 5000
+    // protected _connectTimeout: NodeJS.Timeout | null = null
 
     // Print debug messages? Disabled by default
     protected _debug: boolean = false
     protected _debugBuffers: boolean = false
 
     /**
+     * Constructor
      * 
      * @param {string} host
-     * @param {object} options 
+     * @param {object} optionss
      */
     constructor(
-        host: string = 'localhost',
+        host: string = DEFAULT_HOST,
         options: {
             autoReconnect?: boolean,
-            connectOnStartup?: boolean,
+            connectOnInitialization?: boolean,
             debug?: boolean,
             debugBuffers?: boolean,
+            fallbackListener?: boolean,
             onDataCallback?: Function,
             port?: number,
         } = {}
     ) {
         // Guard passed options of wrong type
-        if (!options || typeof options !== 'object') {
-            options = {}
-        }
+        // if (!options || typeof options !== 'object') {
+        //     options = {}
+        // }
 
         // Set debug flag if parsed in options - disabled as default
         if ('debug' in options && typeof options.debug === 'boolean' && options.debug) {
@@ -114,28 +139,14 @@ export class ConnectionTCP {
         this._debug && console.log('[node-vmix] Instanciating TCP socket to vMix instance', host)
         this._debug && console.log('[node-vmix] Received host', host)
         this._debug && console.log('[node-vmix] Received options', options)
-        this._debug && console.log('-----')
+        this._debug && console.log('[node-vmix] -----')
 
-        // Validate host and port
-        if (!host || host.length < 3) {
-            throw new ApiUrlError(`[node-vmix] Invalid host provided '${host}'`)
-        }
-
-        const port: number = 'port' in options && options.port ? options.port : DEFAULT_TCP_PORT
-
-        if (!port || port < 80 || port > 99999) {
-            throw new ApiUrlError(`[node-vmix] Invalid port provided '${port}'`)
-        }
-
-        // Set private attributes
-        this._host = host
-        this._port = port
-
+        // Set core attributes
+        this._setHost(host)
+        this._setPort('port' in options && options.port ? options.port : DEFAULT_TCP_PORT)
 
         // Initialize listener arrays and callback taps
         // ... plus the generic ones from the socket!
-        this._listeners = {}
-
         CUSTOM_LISTENER_TYPES.forEach((type: string) => {
             this._listeners[type] = []
         })
@@ -144,10 +155,22 @@ export class ConnectionTCP {
             this._listeners[type] = []
         })
 
+        // Setup socket base-listeners to tap all
+        // registered callbacks
+        SOCKET_BASE_LISTENER_TYPES.forEach((type: string) => {
+            this._socket.on(type, (...data: unknown[]) => {
+                // Notify all listeners of this type by
+                // invoking callback-method (including data if present)
+                this._listeners[type].forEach((cb: Function) => {
+                    cb(...data)
+                })
+            })
+        })
+
         // Set autoReconnect option if in options - enabled as default
-        if ('autoReconnect' in options && typeof options.autoReconnect === 'boolean') {
-            this._autoReconnect = options.autoReconnect
-        }
+        // if ('autoReconnect' in options && typeof options.autoReconnect === 'boolean') {
+        //     this._autoReconnect = options.autoReconnect
+        // }
 
         // Is onDataCallback passed in options in constructor?
         // Add this to listeners for data
@@ -155,130 +178,124 @@ export class ConnectionTCP {
             this._listeners.data.push(options.onDataCallback)
         }
 
-        // Connect on start up?
+        this._socket.on('connect', () => {
+            this._debug && console.log('[node-vmix] Connected to vMix instance via TCP socket', this._host)
+
+            this._listeners.connect.forEach(cb => cb())
+
+            // this._isRetrying = false
+
+            // if (this._connectTimeout) {
+            //     clearTimeout(this._connectTimeout)
+            //     this._connectTimeout = null
+            // }
+
+            // // Clear reconnection interval if it is set
+            // if (this._reconnectionInterval) {
+            //     clearInterval(this._reconnectionInterval)
+            //     this._reconnectionInterval = null
+            // }
+        })
+
+        this._socket.on('close', () => {
+            this._debug && console.log('[node-vmix] Socket connection closed')
+
+            // if (this._connectTimeout) {
+            //     clearTimeout(this._connectTimeout)
+            //     this._connectTimeout = null
+            // }
+
+            // // Check if auto reconnect is enabled
+            // // Otherwise also if already retrying, do not init further reconnect attempt
+            // if (!this._autoReconnect || this._isRetrying) {
+            //     return
+            // }
+
+            // this._isRetrying = true
+            // this._debug && console.log('[node-vmix] Initialising reconnecting procedure...')
+
+            // // Each X try to reestablish connection to vMix instance
+            // this._reconnectionInterval = setInterval(() => {
+            //     this.attemptEstablishConnection()
+            // }, this._reconnectionIntervalTimeout)
+        })
+
+        // On data listener
+        // Put data into buffer and try to process data
+        this._socket.on('data', (data: Buffer) => {
+            this._debugBuffers && console.log('[node-vmix] Received data from vMix instance via socket connection')
+            this._debugBuffers && console.log(data)
+            this._debugBuffers && console.log('----------------')
+
+            this._buffer = Buffer.concat([this._buffer, data])
+            this._processBuffer()
+        })
+
+        // Setup timeout for maximum time to connect
+        // this._connectTimeout = setTimeout(() => {
+        //     this._debug && console.log('[node-vmix] Connect timeout reached')
+
+        //     if (this._socket) {
+        //         this._socket.destroy()
+        //         this._socket = null
+        //     }
+        // }, this._connectTimeoutDuration)
+
+        // Connect on initialization?
         // Enabled by default if not explicitly passed in options as a false value,
-        // it is attempting to establish connectionÂ upon startup
+        // it is attempting to establish connection upon startup
         if (
-            !('connectOnStartup' in options)
+            !('connectOnInitialization' in options)
             || (
-                typeof options.connectOnStartup === 'boolean'
-                && options.connectOnStartup
+                options.connectOnInitialization !== undefined
+                && typeof options.connectOnInitialization === 'boolean'
+                && options.connectOnInitialization
             )
         ) {
             // Set a zero delay timeout to ensure that the caller can register
             // event handlers before we try to call them
-            setTimeout(() => this.attemptEstablishConnection(), 0)
+            setTimeout(() => this.connect(), 0)
         }
     }
 
 
 
-    // ///////////////////////
-    // Private methods below
-    // /////////////////////
+    // /////////////////////////////////
+    // Private/protected methods below
+    // ///////////////////////////////
 
     /**
-     * Attempt establish connection
+     * Set host
+     * 
+     * @param {string} host
      */
-    protected attemptEstablishConnection = (): void => {
-        this._debug && console.log(`[node-vmix] Attempting to establish TCP socket connection to vMix instance ${this._host}:${this._port}`)
+    protected _setHost = (host: string): void => {
+        // Validate host and port
+        if (!host || host.length < 3) {
+            throw new ApiUrlError(`[node-vmix] Invalid host provided '${host}'`)
+        }
 
-        // Emit connecting event
-        this._listeners.connecting.forEach((cb: Function) => {
-            cb()
-        })
-
-        const socket = new Socket()
-
-        // Add socket listenener to tap all
-        // registered callbacks
-        SOCKET_BASE_LISTENER_TYPES.forEach((type: string) => {
-            socket.on(type, (data: any) => {
-                // Get all listeners of this type and
-                // Invoke callback method with data
-                this._listeners[type].forEach((cb: Function) => {
-                    cb(data)
-                })
-            })
-        })
-
-        // Internal listener for on connection established events
-        socket.on('connect', () => {
-            this._debug && console.log('[node-vmix] Connected to vMix instance via TCP socket', this._host)
-
-            this._isConnected = true
-            this._isRetrying = false
-
-            if (this._connectTimeout) {
-                clearTimeout(this._connectTimeout)
-                this._connectTimeout = null
-            }
-
-            // Clear reconnection interval if it is set
-            if (this._reconnectionInterval) {
-                clearInterval(this._reconnectionInterval)
-                this._reconnectionInterval = null
-            }
-        })
-
-        // Internal listener for on connection closed events
-        socket.on('close', () => {
-            this._isConnected = false
-
-            if (this._connectTimeout) {
-                clearTimeout(this._connectTimeout)
-                this._connectTimeout = null
-            }
-
-            this._debug && console.log('[node-vmix] Socket connection closed')
-
-            // Check if auto reconnect is enabled
-            // Otherwise also if already retrying, do not init further reconnect attempt
-            if (!this._autoReconnect || this._isRetrying) {
-                return
-            }
-
-            this._isRetrying = true
-            this._debug && console.log('[node-vmix] Initialising reconnecting procedure...')
-
-            // Each X try to reestablish connection to vMix instance
-            this._reconnectionInterval = setInterval(() => {
-                this.attemptEstablishConnection()
-            }, this._reconnectionIntervalTimeout)
-        })
-
-        // On data listener
-        // Put data into buffer and try to process data
-        socket.on('data', (data: Buffer) => {
-            this._debugBuffers && console.log('[node-vmix] Received data on socket')
-            this._debugBuffers && console.log(data)
-            this._debugBuffers && console.log('----------------')
-
-            this._buffer = Buffer.concat([this._buffer, data])
-            this.processBuffer()
-        })
-
-        // Setup timeout for maximum time to connect
-        this._connectTimeout = setTimeout(() => {
-            this._debug && console.log('[node-vmix] Connect timeout reached')
-
-            if (this._socket) {
-                this._socket.destroy()
-                this._socket = null
-            }
-        }, this._connectTimeoutDuration)
-
-        this._socket = socket
-
-        // Attempt establishing connection
-        socket.connect(this._port, this._host)
+        this._host = host
     }
 
+    /**
+     * Set port
+     * 
+     * @param {number} port
+     */
+    protected _setPort = (port: number): void => {
+        // Guard port number
+        if (!port || port < 80 || port > 99999) {
+            throw new ApiUrlError(`[node-vmix] Invalid port provided '${port}'`)
+        }
+
+        this._port = port
+    }
 
     /**
      * Process received data that is currently in the buffer
      */
-    protected processBuffer = (): void => {
+    protected _processBuffer = (): void => {
         // Process buffer if it contains data
         if (!this._buffer.byteLength) {
             return
@@ -344,66 +361,62 @@ export class ConnectionTCP {
         // If an XML message then
         // just emit the message without further manipulation
         if (messageType === 'XML') {
-            return this.processBufferXMLmessage(firstMessage, firstMessageLength, firstMessageParts)
+            return this._processBufferXMLmessage(firstMessage, firstMessageLength, firstMessageParts)
             // Otherwise treat customly based on type of message
-        } else {
-            return this.processBufferNonXMLmessage(messageType, messageStatus, firstMessage, firstMessageLength)
         }
+
+        return this._processBufferNonXMLmessage(messageType, messageStatus, firstMessage, firstMessageLength)
     }
 
-    protected processBufferNonXMLmessage(
+    protected _processBufferNonXMLmessage(
         messageType: string,
         messageStatus: string,
         firstMessage: string,
-        firstMessageLength: number,
+        firstMessageByteLength: number,
     ): void {
         this._debugBuffers && console.log('[node-vmix] Processing non-XML message:', firstMessage)
 
         // If message status is Error then emit as regular message
         if (messageStatus === 'ER') {
             this._debugBuffers && console.log('[node-vmix] Emitting error message:', firstMessage)
-            return this.emitMessage(firstMessage)
+            this._emitMessage(firstMessage)
         } else {
-            const messageTypeLower = messageType.toLowerCase()
-            // If message is not having a registered listener 
-            // of is of a custom message type then Emit data generic message
-            if (
-                !CUSTOM_MESSAGES_TYPES.includes(messageTypeLower)
-                || !this._listeners[messageTypeLower].length
-            ) {
-                this.emitMessage(firstMessage)
-            } else {
-                this._debugBuffers && console.log('[node-vmix] Handling custom message:', messageType)
 
-                switch (messageTypeLower) {
-                    case 'tally':
-                        // console.log('Not an XML message - instead a message of type', messageType)
-                        this.emitTallyMessage(firstMessage)
-                        break;
-                    case 'activators':
-                        this.emitActivatorsMessage(firstMessage)
-                        break;
-                    default:
-                        break;
-                }
+
+            const messageTypeLower = messageType.toLowerCase()
+
+            this._debugBuffers && console.log('[node-vmix] Handling custom message:', messageType)
+
+            switch (messageTypeLower) {
+                case 'tally':
+                    // console.log('Not an XML message - instead a message of type', messageType)
+                    this._emitTallyMessage(firstMessage)
+                    break
+                case 'activators':
+                    this.emitActivatorsMessage(firstMessage)
+                    break
+                default:
+                    this._emitMessage(firstMessage)
+                    break
             }
         }
 
         // Pop first message from buffer
-        const sliced = this._buffer.slice(firstMessageLength + NEWLINE_CHAR_LENGTH) // New line character is two bytes
+        const sliced = this._buffer.slice(firstMessageByteLength + NEWLINE_CHAR_BYTE_LENGTH)
         // console.log('Sliced', sliced.toString())
         this._buffer = sliced
 
-        this.processBuffer()
+        this._processBuffer()
     }
 
     /**
      * Process buffer XML message
+     * 
      * @param firstMessage
      * @param firstMessageLength
      * @param firstMessageParts
      */
-    protected processBufferXMLmessage(
+    protected _processBufferXMLmessage(
         firstMessage: string,
         firstMessageLength: number,
         firstMessageParts: string[]
@@ -432,7 +445,7 @@ export class ConnectionTCP {
         // console.log('First message length: ', firstMessageLength)
         // console.log('Needed from message: ', bufferLengthNeeded)
 
-        const messageCompleteLength = firstMessageLength + NEWLINE_CHAR_LENGTH + bufferLengthNeeded
+        const messageCompleteLength = firstMessageLength + NEWLINE_CHAR_BYTE_LENGTH + bufferLengthNeeded
         if (this._buffer.byteLength < messageCompleteLength) {
             // console.log('Not enough data in buffer...')
             // console.log(`"""${data}"""`)
@@ -443,7 +456,7 @@ export class ConnectionTCP {
         // Exctract the XML data
 
         const xmlData = this._buffer.slice(
-            firstMessageLength + NEWLINE_CHAR_LENGTH,
+            firstMessageLength + NEWLINE_CHAR_BYTE_LENGTH,
             firstMessageLength + bufferLengthNeeded
         )
         const xmlDataString = xmlData.toString()
@@ -453,14 +466,14 @@ export class ConnectionTCP {
         // Pop message from current buffer data and update buffer
         this._buffer = this._buffer.slice(messageCompleteLength)
 
-        this.processBuffer()
+        this._processBuffer()
     }
 
 
     /**
      * Emit generic data message
      */
-    protected emitMessage = (message: string): void => {
+    protected _emitMessage = (message: string): void => {
         // Tap callback listeners with message
         this._listeners.data.forEach((cb: Function) => {
             cb(message)
@@ -470,14 +483,14 @@ export class ConnectionTCP {
     /**
      * Emit Tally message
      */
-    protected emitTallyMessage = (message: string): void => {
+    protected _emitTallyMessage = (message: string): void => {
 
         const listeners = this._listeners.tally
 
-        // If no xmlData listeners were registered then
+        // If no tally-listeners were registered then
         // fallback to emit the xml message as generic message
-        if (!listeners || !listeners.length) {
-            return this.emitMessage(message)
+        if (!listeners.length) {
+            return this._emitMessage(message)
         }
 
         this._debug && console.log('Tally string: ', message)
@@ -497,13 +510,12 @@ export class ConnectionTCP {
      * Emit Activators message
      */
     protected emitActivatorsMessage = (message: string): void => {
-
         const listeners = this._listeners.activators
 
-        // If no xmlData listeners were registered then
+        // If no activators-listeners were registered then
         // fallback to emit the xml message as generic message
-        if (!listeners || !listeners.length) {
-            return this.emitMessage(message)
+        if (!listeners.length) {
+            return this._emitMessage(message)
         }
 
         // Tap callback listeners with tally summary
@@ -516,13 +528,12 @@ export class ConnectionTCP {
      * Emit XML message
      */
     protected emitXmlMessage = (message: string): void => {
-
         const listeners = this._listeners.xml
 
         // If no xmlData listeners were registered then
         // fallback to emit the xml message as generic message
         if (!listeners || !listeners.length) {
-            return this.emitMessage(message)
+            return this._emitMessage(message)
         }
 
         // Tap callback listeners with message
@@ -535,10 +546,10 @@ export class ConnectionTCP {
     /**
      * Convert a function command object to the string to execute
      * 
-     * @param {Command} command
+     * @param {vMixApiFunctionCommand} command
      * @returns {string}
      */
-    protected functionCommandObjectToString = (command: Command): string => {
+    protected functionCommandObjectToString = (command: vMixApiFunctionCommand): string => {
 
         const cmdFunc = command.Function
         // Clone command and remove function name from command object
@@ -562,11 +573,11 @@ export class ConnectionTCP {
 
     /**
      * Stringify commands if necessary
-     * @param {Command|string} command
+     * @param {vMixApiFunctionCommand|string} command
      * 
      * @returns {string}
      */
-    protected stringifyCommand = (command: Command | string): string => {
+    protected stringifyCommand = (command: vMixApiFunctionCommand | string): string => {
         // If an object then it is a function command which
         // needs to be turned it into a valid string
         if (typeof command === 'object') {
@@ -578,10 +589,19 @@ export class ConnectionTCP {
         if (indexFirstSpace === -1) {
             return command.toUpperCase()
         }
-
         command = command.slice(0, indexFirstSpace + 1).toUpperCase() + command.slice(indexFirstSpace + 1)
 
         return command
+    }
+
+    protected ensureMessageEnding = (message: string): string => {
+        // End message with a new line character
+        // to make sure the message is interpreted by the receiver
+        if (!message.endsWith('\r\n')) {
+            message += '\r\n'
+        }
+
+        return message
     }
 
 
@@ -595,34 +615,68 @@ export class ConnectionTCP {
      * See "Commands section"
      * 
      * @param {String} message 
+     * @returns {Promise}
      */
-    protected sendSingleMessage = (message: string): void => {
-        // End message with a new line character
-        // to make sure the message is interpreted by the receiver
-        if (!message.endsWith('\r\n')) {
-            message += '\r\n'
+    protected sendMessageToSocket = async (message: string) => {
+        this._debug && console.log('[node-vmix] Sending message to vMix instance via socket', message)
+
+        // Guard connected
+        if (!this.connected()) {
+            this._debug && console.log('[node-vmix] Warning! Attempted to send message but socket is not connected')
+            throw new Error('Not able to send message - not connected to socket yet!')
         }
 
-        this._debug && console.log('[node-vmix] Sending message to socket', message)
+        this._socket.write(message, (err) => {
+            if (err) throw err
 
-        if (!this._socket) throw new Error('Tried to send data without connection')
-        this._socket.write(message)
+            // Resolve the promise since message has been written
+            Promise.resolve()
+        })
     }
 
-    // //////////////////////
-    // Private methods end
-    // ////////////////////
-
+    // ///////////////////////////////
+    // Private/protected methods end
+    // /////////////////////////////
 
 
     // //////////////////////
     // Public methods start
     // ////////////////////
 
+    /**
+     * Connect
+     * 
+     * Attempt to establish connection to socket of vMix instance
+     */
+    connect = async (host?: string, port?: number) => {
+        this._debug && console.log(`[node-vmix] Attempting to establish TCP socket connection to vMix instance ${this._host}:${this._port}`)
 
+        if (this.connected()) {
+            this._debug && console.log(`[node-vmix] TCP socket connection to vMix instance was already established... ${this._host}:${this._port}`)
+            return
+        }
+
+        if (host) {
+            this._setHost(host)
+        }
+        if (port) {
+            this._setPort(port)
+        }
+
+        // Emit connecting event
+        this._listeners.connecting.forEach(cb => cb())
+
+        // Attempt establishing connection
+        this._socket.connect(this._port, this._host, () => {
+            // Resolve promise upon establishment of socket connection 
+            Promise.resolve()
+        })
+    }
 
     /**
-     * Send command(s) to connection
+     * Send one or more messages to socket connection
+     * 
+     * Messages are requests or command(s) to perform functions to the API
      * 
      * This must be a string or object,
      * or a array of strings or objects (or a mix of object or strings) 
@@ -631,16 +685,21 @@ export class ConnectionTCP {
      * https://www.vmix.com/help22/TCPAPI.html 
      * See "Commands section"
      * 
-     * @param {Command[]|Command|string} commands 
+     * @param {string|string[]|vMixApiFunctionCommand|vMixApiFunctionCommand[]} commands 
      */
-    send(command: Command[] | Command | string): void {
-        const commands: (Command | string)[] = !Array.isArray(command) ? [command] : command
+    send(command: string | vMixApiFunctionCommand | vMixApiFunctionCommand[]): void {
+        // Guard socket connected
+        if (!this.connected()) {
+            throw new Error('[node-vmix] Tried to send commands without open socket...')
+        }
+
+        const commands: (vMixApiFunctionCommand | string)[] = !Array.isArray(command) ? [command] : command
 
         // Stringify each command (if necessary) and send these as 
         // single messages on TCP socket to vMix instance
         commands
             .map(this.stringifyCommand)
-            .forEach(this.sendSingleMessage)
+            .map(this.ensureMessageEnding)
     }
 
     /**
@@ -666,27 +725,27 @@ export class ConnectionTCP {
      * Ask to Shutdown and destroy the TCP socket
      */
     shutdown(): void {
-        // stop trying to reconnect after being instructed to shutdown.
-        this._autoReconnect = false
-        if (this._reconnectionInterval) {
-            clearInterval(this._reconnectionInterval)
-            this._reconnectionInterval = null
-        }
+        // // stop trying to reconnect after being instructed to shutdown.
+        // this._autoReconnect = false
+        // if (this._reconnectionInterval) {
+        //     clearInterval(this._reconnectionInterval)
+        //     this._reconnectionInterval = null
+        // }
 
-        if (this._socket) {
-            // kill client after server's response
-            this.send('quit')
-            this._socket.destroy()
-            this._socket = null
-        }
+        // if (this._socket) {
+        //     // kill client after server's response
+        //     this.send('quit')
+        //     this._socket.destroy()
+        //     this._socket = null
+        // }
     }
 
     /**
-     * Get raw TCP socket
+     * Get "raw" TCP socket
      * 
      * @returns Socket | null
      */
-    socket(): Socket | null {
+    socket(): Socket {
         return this._socket
     }
 
@@ -694,15 +753,16 @@ export class ConnectionTCP {
      * Is currently connected?
      */
     connected(): boolean {
-        return this._isConnected
+        // @ts-ignore
+        return this._socket.readyState === 'open'
     }
 
     /**
      * Is currently connecting?
      */
     connecting(): boolean {
-        if (!this._socket) return false
-        return this._socket.connecting
+        // @ts-ignore
+        return this._socket.readyState === 'opening'
     }
 
     // //////////////////////

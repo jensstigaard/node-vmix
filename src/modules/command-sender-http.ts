@@ -3,7 +3,7 @@ import querystring from 'querystring'
 
 import ConnectionHTTP from './connection-http'
 
-import { Command } from '../types/command'
+import { vMixApiFunctionCommand } from '../types/api-command'
 
 //
 export class CommandSenderHTTP {
@@ -13,7 +13,7 @@ export class CommandSenderHTTP {
     protected _connection!: ConnectionHTTP
 
     constructor(connection: ConnectionHTTP, onSuccess: Function, onError: Function) {
-        if(!connection) {
+        if (!connection) {
             throw new Error('No connection provided')
         }
         this.setConnection(connection)
@@ -23,11 +23,11 @@ export class CommandSenderHTTP {
     }
 
     // Prepare promise
-    protected preparePromise(commands: Command[]) {
+    protected preparePromise(commands: vMixApiFunctionCommand[]) {
 
         // If only one command were coded - send via get request
         if (!Array.isArray(commands)) {
-            let command = commands
+            const command = commands
 
             return axios.get(this._connection.apiUrl(), { params: command })
         }
@@ -35,16 +35,16 @@ export class CommandSenderHTTP {
         // If multiple commands - send via POST request
 
         // Manipulate commands for being sent in POST request
-        let commandsMap = commands.map(command => {
+        const commandsMap = commands.map(command => {
             return querystring.stringify(command)
         })
 
-        let data = {
+        const data = {
             Function: 'ScriptStartDynamic',
             Value: commandsMap.join("\n\r")
         }
 
-        let dataString = querystring.stringify(data)
+        const dataString = querystring.stringify(data)
 
         return axios.post(this._connection.apiUrl(), dataString)
     }
@@ -57,9 +57,9 @@ export class CommandSenderHTTP {
         this._connection = connection
     }
 
-    send(commands: Command[], onSuccess: Function, onError: Function) {
+    send(commands: vMixApiFunctionCommand[], onSuccess: Function, onError: Function) {
 
-        let promise = this.preparePromise(commands)
+        const promise = this.preparePromise(commands)
 
         promise
             .then((response: any) => {

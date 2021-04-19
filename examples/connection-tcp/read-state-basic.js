@@ -1,6 +1,6 @@
 // Import modules from the package
 // Note when using as npm dep: swap in: 'node-vmix' instead of '../index'
-const { ConnectionTCP } = require('../dist/index')
+const { ConnectionTCP } = require('../../dist/index')
 const { XmlApi } = require('vmix-js-utils')
 
 // Set up vMix connection
@@ -29,7 +29,16 @@ connection.on('xml', (xmlData) => {
 // Add on connect listener
 connection.on('connect', () => {
   console.log('Connected')
-  
+
   // As soon as connected, then send 'request' for XML data
   connection.send('XML')
 })
+
+connection.connect().then(() => console.log('Connected once!'))
+
+console.log(connection.connected() ? 'Connected' : 'Not connected')
+
+setInterval(() => {
+  console.log(connection.connected() ? 'Connected' : 'Not connected')
+}, 2000)
+
