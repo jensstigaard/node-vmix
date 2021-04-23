@@ -91,11 +91,11 @@ export class ConnectionTCP {
     protected _listeners: { [key: string]: Function[] } = {}
 
     // Auto reconnect? Enabled by default
-    // protected _autoReconnect: boolean = true
+    protected _autoReconnect: boolean = true
 
-    // protected _isRetrying: boolean = false
-    // protected _reconnectionIntervalTimeout: number = 10000
-    // protected _reconnectionInterval: NodeJS.Timeout | null = null
+    protected _isRetrying: boolean = false
+    protected _reconnectionIntervalTimeout: number = 10000
+    protected _reconnectionInterval: NodeJS.Timeout | null = null
 
     // // Timeout for establishing the connection. Should be smaller than the reconnect invterval!
     // protected _connectTimeoutDuration: number = 5000
@@ -188,9 +188,9 @@ export class ConnectionTCP {
         })
 
         // Set autoReconnect option if in options - enabled as default
-        // if ('autoReconnect' in options && typeof options.autoReconnect === 'boolean') {
-        //     this._autoReconnect = options.autoReconnect
-        // }
+        if ('autoReconnect' in options && typeof options.autoReconnect === 'boolean') {
+            this._autoReconnect = options.autoReconnect
+        }
 
         // Is onDataCallback passed in options in constructor?
         // Add this to listeners for data
@@ -199,20 +199,20 @@ export class ConnectionTCP {
         }
 
         this._socket.on('connect', () => {
-            this._debug && console.log('[node-vmix] Connected to vMix instance via TCP socket', this._host)
+            this._debug && console.log('[node-vmix] Connected to vMix instance via TCP socket', this._host, this._port)
 
-            // this._isRetrying = false
+            this._isRetrying = false
 
             // if (this._connectTimeout) {
             //     clearTimeout(this._connectTimeout)
             //     this._connectTimeout = null
             // }
 
-            // // Clear reconnection interval if it is set
-            // if (this._reconnectionInterval) {
-            //     clearInterval(this._reconnectionInterval)
-            //     this._reconnectionInterval = null
-            // }
+            // Clear reconnection interval if it is set
+            if (this._reconnectionInterval) {
+                clearInterval(this._reconnectionInterval)
+                this._reconnectionInterval = null
+            }
         })
 
         this._socket.on('close', () => {
@@ -223,19 +223,19 @@ export class ConnectionTCP {
             //     this._connectTimeout = null
             // }
 
-            // // Check if auto reconnect is enabled
-            // // Otherwise also if already retrying, do not init further reconnect attempt
-            // if (!this._autoReconnect || this._isRetrying) {
-            //     return
-            // }
+            // Check if auto reconnect is enabled
+            // Otherwise also if already retrying, do not init further reconnect attempt
+            if (!this._autoReconnect || this._isRetrying) {
+                return
+            }
 
-            // this._isRetrying = true
-            // this._debug && console.log('[node-vmix] Initialising reconnecting procedure...')
+            this._isRetrying = true
+            this._debug && console.log('[node-vmix] Initialising reconnecting procedure...')
 
-            // // Each X try to reestablish connection to vMix instance
-            // this._reconnectionInterval = setInterval(() => {
-            //     this.attemptEstablishConnection()
-            // }, this._reconnectionIntervalTimeout)
+            // Each X try to reestablish connection to vMix instance
+            this._reconnectionInterval = setInterval(() => {
+                this.connect()
+            }, this._reconnectionIntervalTimeout)
         })
 
         // On data listener
@@ -835,22 +835,24 @@ export class ConnectionTCP {
      * Ask to Shutdown and destroy the TCP socket
      */
     shutdown(): void {
-        // // stop trying to reconnect after being instructed to shutdown.
-        // this._autoReconnect = false
-        // if (this._reconnectionInterval) {
-        //     clearInterval(this._reconnectionInterval)
-        //     this._reconnectionInterval = null
-        // }
+        // // Stop trying to reconnect after being instructed to shutdown.
+        this._autoReconnect = false
+        if (this._reconnectionInterval) {
+            clearInterval(this._reconnectionInterval)
+            this._reconnectionInterval = null
+        }
 
         if (this.connected()) {
             // Gently close socket by sending QUIT message
-            this.send('QUIT').then(() => {
-                this._socket.destroy()
-            })
+            this.send('QUIT')
+                .then(() => {
+                    this._socket.destroy()
+                })
             return
         }
-        this._socket.destroy()
 
+        // Is not connected, so just destroy socket
+        this._socket.destroy()
     }
 
     /**
