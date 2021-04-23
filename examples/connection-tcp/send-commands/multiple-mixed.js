@@ -21,6 +21,12 @@ connection.on('connect', () => {
     'subscribe TALLY', // Request tally information
     // - On title on input with name 'MyTitle' - set text of field "TitleField" to the text "Updated text!"
     { Function: 'SetText', Input: 'MyTitle', SelectedName: 'TitleField', Value: 'Updated text!' },
+    { Function: 'SetText', Input: 'Scoreboard 2- Lineup.gtzip', SelectedName: 'Team Lineups.Text', Value: 'My header!' },
+    { Function: 'SetText', Input: 'Scoreboard 2- Lineup.gtzip', SelectedName: 'Home Team.Text', Value: 'Home Team' },
+    { Function: 'SetText', Input: 'Scoreboard 2- Lineup.gtzip', SelectedName: 'Away Team.Text', Value: 'Away Team' },
+    { Function: 'SetText', Input: 'Scoreboard 2- Lineup.gtzip', SelectedName: 'Home-Player 1.Text', Value: 'H Player 1' },
+    { Function: 'SetText', Input: 'Scoreboard 2- Lineup.gtzip', SelectedName: 'Home-Player 2.Text', Value: 'H Player 2' },
+    
     // - Put input 1 on air on overlay channel 1
     { Function: 'OverlayInput1On', Input: 'MyTitle' },
     // - Perform Cut to the input currently in preview
