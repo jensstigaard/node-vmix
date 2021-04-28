@@ -2,7 +2,6 @@
 import { Socket } from 'net'
 
 import querystring from 'querystring'
-import { TcpTally } from 'vmix-js-utils'
 
 // Types
 import { vMixApiFunctionCommand } from '../types/api-command'
@@ -535,11 +534,9 @@ export class ConnectionTCP {
             const tallyString = message
                 .replace('TALLY OK ', '')
 
-            const summary = TcpTally.extractSummary(tallyString)
-
-            // Tap callback listeners with tally summary
+            // Tap callback listeners with tally string
             listeners.forEach((cb: Function) => {
-                cb(summary)
+                cb(tallyString)
             })
 
             return
