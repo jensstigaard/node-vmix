@@ -3789,10 +3789,10 @@ uuid@^8.2.0, uuid@^8.3.0, uuid@^8.3.2:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
-vmix-js-utils@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/vmix-js-utils/-/vmix-js-utils-4.0.1.tgz#797a29e00c93353e598d72e25e2dc3a140cfed7b"
-  integrity sha512-qs1yyJYtIFG4xULQ8XYZHq+MjORgmtzBE8HCHcUJB7YdvMFb32L9vbOki2XOaXX+n8wS3tYc9xpZskVT61I50Q==
+vmix-js-utils@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/vmix-js-utils/-/vmix-js-utils-4.0.3.tgz#6a2d36c6715579b09494f051ebf30b69de421688"
+  integrity sha512-HIgY0jsHcY9z5vRMzlSgcUV+X5oaPyLr/QroTMRcR1HkVn59wOreWn6nlKu+DmPf+FehyZHY/pjdFGlIpIaPAw==
   dependencies:
     lodash "^4.17.21"
     querystring "^0.2.1"
