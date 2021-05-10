@@ -15,8 +15,8 @@ connection.on('xml', (xmlData) => {
 
   // Extract input data and
   // manipulate to desired format
-  const inputsRawData = XmlApi.InputMapping.extractInputsFromXML(xmlContent)
-  const inputs = XmlApi.InputMapping.mapInputs(inputsRawData)
+  const inputsRawData = XmlApi.Inputs.extractInputsFromXML(xmlContent)
+  const inputs = XmlApi.Inputs.map(inputsRawData)
 
   // Now you have a list of inputs
   console.log(inputs)
