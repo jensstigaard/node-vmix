@@ -1,3 +1,6 @@
+// Run by using command:
+// ts-node examples/connection-tcp/retrieve-state-basic.ts
+
 // Import modules from the package
 // Note when using as npm dep: swap in: 'node-vmix' instead of '../index'
 import { ConnectionTCP } from '../../dist/index'
@@ -29,4 +32,3 @@ connection.on('connect', () => {
   // As soon as connected, then send request to receive XML state data
   connection.send('XML')
 })
-
