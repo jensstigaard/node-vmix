@@ -62,9 +62,8 @@ The documentation includes definition and description of classes and type.
 
 
 ## Installation and use
-### As a dependency using npm
-The utilities are published at npmjs as a package for NodeJS, meaning that you can easily add the utilities as a dependency in your NodeJS project.
-Found here: https://www.npmjs.com/package/node-vmix
+### [NPM](https://www.npmjs.com/package/node-vmix)
+The utilities are published at npmjs as a package for  [NodeJS](https://nodejs.org/en/), meaning that you can easily add the utilities as a dependency in your project using npm.
 ```sh
 npm install node-vmix --save
 # or 'yarn add node-vmix'

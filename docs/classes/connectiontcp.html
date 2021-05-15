@@ -144,19 +144,21 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>ConnectionTCP<span class="tsd-signature-symbol">(</span>host<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>autoReconnect<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>connectOnInitialization<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>debug<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>debugBuffers<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>onDataCallback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">; </span>port<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>useDataListenersAsFallback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="connectiontcp.html" class="tsd-signature-type" data-tsd-kind="Class">ConnectionTCP</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>ConnectionTCP<span class="tsd-signature-symbol">(</span>host<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>autoReconnect<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>debug<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>debugBuffers<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>disableAutoConnectOnInit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>onDataCallback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">; </span>port<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>useDataListenersAsFallback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="connectiontcp.html" class="tsd-signature-type" data-tsd-kind="Class">ConnectionTCP</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L125">modules/connection-tcp.ts:125</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L124">modules/connection-tcp.ts:124</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Constructor</p>
+									<p>Constructor of ConnectionTCP</p>
 								</div>
+								<p>The socket automatically attempts to connect by default
+								unless the option &#39;disableAutoConnectOnInit&#39; is set to true</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -164,19 +166,19 @@
 									<h5>host: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></h5>
 								</li>
 								<li>
-									<h5>options: <span class="tsd-signature-symbol">{ </span>autoReconnect<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>connectOnInitialization<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>debug<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>debugBuffers<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>onDataCallback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">; </span>port<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>useDataListenersAsFallback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = {}</span></h5>
+									<h5>options: <span class="tsd-signature-symbol">{ </span>autoReconnect<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>debug<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>debugBuffers<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>disableAutoConnectOnInit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>onDataCallback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">; </span>port<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>useDataListenersAsFallback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = {}</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter">
 											<h5><span class="tsd-flag ts-flagOptional">Optional</span> auto<wbr>Reconnect<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5><span class="tsd-flag ts-flagOptional">Optional</span> connect<wbr>OnInitialization<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
 										</li>
 										<li class="tsd-parameter">
 											<h5><span class="tsd-flag ts-flagOptional">Optional</span> debug<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
 										</li>
 										<li class="tsd-parameter">
 											<h5><span class="tsd-flag ts-flagOptional">Optional</span> debug<wbr>Buffers<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+										</li>
+										<li class="tsd-parameter">
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> disable<wbr>Auto<wbr>Connect<wbr>OnInit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
 										</li>
 										<li class="tsd-parameter">
 											<h5><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Data<wbr>Callback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Function</span></h5>
@@ -203,7 +205,7 @@
 					<div class="tsd-signature tsd-kind-icon">_auto<wbr>Reconnect<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L94">modules/connection-tcp.ts:94</a></li>
+							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L93">modules/connection-tcp.ts:93</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -213,7 +215,7 @@
 					<div class="tsd-signature tsd-kind-icon">_buffer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L81">modules/connection-tcp.ts:81</a></li>
+							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L80">modules/connection-tcp.ts:80</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -223,7 +225,7 @@
 					<div class="tsd-signature tsd-kind-icon">_debug<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L118">modules/connection-tcp.ts:118</a></li>
+							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L117">modules/connection-tcp.ts:117</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -233,7 +235,7 @@
 					<div class="tsd-signature tsd-kind-icon">_debug<wbr>Buffer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L125">modules/connection-tcp.ts:125</a></li>
+							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L124">modules/connection-tcp.ts:124</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -249,7 +251,7 @@
 					<div class="tsd-signature tsd-kind-icon">_host<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L77">modules/connection-tcp.ts:77</a></li>
+							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L76">modules/connection-tcp.ts:76</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -259,7 +261,7 @@
 					<div class="tsd-signature tsd-kind-icon">_is<wbr>Retrying<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L96">modules/connection-tcp.ts:96</a></li>
+							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L95">modules/connection-tcp.ts:95</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -269,7 +271,7 @@
 					<div class="tsd-signature tsd-kind-icon">_listeners<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> = {}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L91">modules/connection-tcp.ts:91</a></li>
+							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L90">modules/connection-tcp.ts:90</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -292,7 +294,7 @@
 					<div class="tsd-signature tsd-kind-icon">_port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L78">modules/connection-tcp.ts:78</a></li>
+							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L77">modules/connection-tcp.ts:77</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -302,7 +304,7 @@
 					<div class="tsd-signature tsd-kind-icon">_reconnection<wbr>Interval<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Timeout</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L98">modules/connection-tcp.ts:98</a></li>
+							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L97">modules/connection-tcp.ts:97</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -312,7 +314,7 @@
 					<div class="tsd-signature tsd-kind-icon">_reconnection<wbr>Interval<wbr>Timeout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 10000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L97">modules/connection-tcp.ts:97</a></li>
+							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L96">modules/connection-tcp.ts:96</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -322,7 +324,7 @@
 					<div class="tsd-signature tsd-kind-icon">_socket<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Socket</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L86">modules/connection-tcp.ts:86</a></li>
+							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L85">modules/connection-tcp.ts:85</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -337,7 +339,7 @@
 					<div class="tsd-signature tsd-kind-icon">_use<wbr>Data<wbr>Listeners<wbr>AsFallback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L111">modules/connection-tcp.ts:111</a></li>
+							<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L110">modules/connection-tcp.ts:110</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -362,7 +364,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L498">modules/connection-tcp.ts:498</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L494">modules/connection-tcp.ts:494</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -390,7 +392,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L529">modules/connection-tcp.ts:529</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L525">modules/connection-tcp.ts:525</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -418,7 +420,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L559">modules/connection-tcp.ts:559</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L553">modules/connection-tcp.ts:553</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -446,7 +448,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L316">modules/connection-tcp.ts:316</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L312">modules/connection-tcp.ts:312</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -468,7 +470,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L389">modules/connection-tcp.ts:389</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L385">modules/connection-tcp.ts:385</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -500,7 +502,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L441">modules/connection-tcp.ts:441</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L437">modules/connection-tcp.ts:437</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -536,7 +538,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L691">modules/connection-tcp.ts:691</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L685">modules/connection-tcp.ts:685</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -568,7 +570,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L290">modules/connection-tcp.ts:290</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L286">modules/connection-tcp.ts:286</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -598,7 +600,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L304">modules/connection-tcp.ts:304</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L300">modules/connection-tcp.ts:300</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -628,7 +630,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L823">modules/connection-tcp.ts:823</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L817">modules/connection-tcp.ts:817</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -650,7 +652,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L722">modules/connection-tcp.ts:722</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L716">modules/connection-tcp.ts:716</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -682,7 +684,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L870">modules/connection-tcp.ts:870</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L864">modules/connection-tcp.ts:864</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -704,7 +706,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L878">modules/connection-tcp.ts:878</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L872">modules/connection-tcp.ts:872</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -726,7 +728,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L508">modules/connection-tcp.ts:508</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L504">modules/connection-tcp.ts:504</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -754,7 +756,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L586">modules/connection-tcp.ts:586</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L580">modules/connection-tcp.ts:580</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -782,7 +784,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L668">modules/connection-tcp.ts:668</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L662">modules/connection-tcp.ts:662</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -805,7 +807,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L612">modules/connection-tcp.ts:612</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L606">modules/connection-tcp.ts:606</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -833,7 +835,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L805">modules/connection-tcp.ts:805</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L799">modules/connection-tcp.ts:799</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -866,7 +868,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L786">modules/connection-tcp.ts:786</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L780">modules/connection-tcp.ts:780</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -899,7 +901,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L762">modules/connection-tcp.ts:762</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L756">modules/connection-tcp.ts:756</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -933,7 +935,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L837">modules/connection-tcp.ts:837</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L831">modules/connection-tcp.ts:831</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -955,7 +957,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L863">modules/connection-tcp.ts:863</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L857">modules/connection-tcp.ts:857</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -978,7 +980,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/3249b55/src/modules/connection-tcp.ts#L640">modules/connection-tcp.ts:640</a></li>
+									<li>Defined in <a href="https://github.com/jensstigaard/node-vmix/blob/456f406/src/modules/connection-tcp.ts#L634">modules/connection-tcp.ts:634</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
