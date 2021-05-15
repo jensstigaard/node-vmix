@@ -124,7 +124,10 @@ export class ConnectionTCP {
     protected _debugBuffer: boolean = false
 
     /**
-     * Constructor
+     * Constructor of ConnectionTCP
+     * 
+     * The socket automatically attempts to connect by default
+     * unless the option 'disableAutoConnectOnInit' is set to true
      * 
      * @param {string} host
      * @param {object} optionss
@@ -133,9 +136,9 @@ export class ConnectionTCP {
         host: string = DEFAULT_HOST,
         options: {
             autoReconnect?: boolean,
-            connectOnInitialization?: boolean,
             debug?: boolean,
             debugBuffers?: boolean,
+            disableAutoConnectOnInit?: boolean,
             onDataCallback?: Function,
             port?: number,
             useDataListenersAsFallback?: boolean,
@@ -258,16 +261,10 @@ export class ConnectionTCP {
         //     }
         // }, this._connectTimeoutDuration)
 
-        // Connect on initialization?
-        // Enabled by default if not explicitly passed in options as a false value,
-        // it is attempting to establish connection upon startup
+        // Disable auto connect on initialization?
         if (
-            !('connectOnInitialization' in options)
-            || (
-                options.connectOnInitialization !== undefined
-                && typeof options.connectOnInitialization === 'boolean'
-                && options.connectOnInitialization
-            )
+            !('disableAutoConnectOnInit' in options)
+            || options.disableAutoConnectOnInit !== true
         ) {
             // Set a zero delay timeout to ensure that the caller can register
             // event handlers before we try to call them
