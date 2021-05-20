@@ -703,16 +703,18 @@ export class ConnectionTCP {
 
         // Guard connected
         // if (!this.connected()) {
-            // this._debug && console.warn('[node-vmix]', 'Warning! Attempted to send message but socket is not connected', this._socket)
-            // throw new Error('[node-vmix] Not able to send message - not connected to socket yet!')
-            // console.error('[node-vmix] Not able to send message - not connected to socket yet!')
+        // this._debug && console.warn('[node-vmix]', 'Warning! Attempted to send message but socket is not connected', this._socket)
+        // throw new Error('[node-vmix] Not able to send message - not connected to socket yet!')
+        // console.error('[node-vmix] Not able to send message - not connected to socket yet!')
         // }
 
-        // Write message to socket buffer (will be buffered by socket instance if not connected yet)
+        // Write message to socket
+        // The message will be buffered in user memory by socket instance
+        // in the case the socket is not yet connected, or the traffic is congested
         this._socket.write(message, (err) => {
             if (err) throw err
 
-            // Resolve the promise since message has been written
+            // Resolve the promise when the message has been sent to socket destination
             Promise.resolve()
         })
     }
@@ -775,8 +777,8 @@ export class ConnectionTCP {
     async send(command: string | string[] | vMixApiFunctionCommand | vMixApiFunctionCommand[]) {
         // Guard socket connected
         // if (!this.connected()) {
-            // throw new Error('[node-vmix] Tried to send commands without open socket...')
-            // console.error('[node-vmix] Tried to send commands without open socket...')
+        // throw new Error('[node-vmix] Tried to send commands without open socket...')
+        // console.error('[node-vmix] Tried to send commands without open socket...')
         // }
 
         const commands: (vMixApiFunctionCommand | string)[] = !Array.isArray(command) ? [command] : command
