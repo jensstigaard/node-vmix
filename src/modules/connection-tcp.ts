@@ -101,6 +101,11 @@ export class ConnectionTCP {
     // protected _connectTimeout: NodeJS.Timeout | null = null
 
     /**
+     * Connection state
+     */
+    protected _isConnected: boolean = false
+
+    /**
      * Emit vMix messages to listeners registered for data
      * as a fallback solution if no listener is registered 
      * in the specific custom-listener-type
@@ -200,8 +205,11 @@ export class ConnectionTCP {
             this._listeners.data.push(options.onDataCallback)
         }
 
+        // Register custom listener for 'on connect'-event for handling internal variables
         this._socket.on('connect', () => {
             this._debug && console.log('[node-vmix]', 'Connected to vMix instance via TCP socket', this._host, this._port)
+
+            this._isConnected = true
 
             this._isRetrying = false
 
@@ -217,8 +225,11 @@ export class ConnectionTCP {
             }
         })
 
+        // Register custom listener for 'on close'-event for handling internal variables
         this._socket.on('close', () => {
             this._debug && console.log('[node-vmix]', 'Socket connection closed')
+
+            this._isConnected = false
 
             // if (this._connectTimeout) {
             //     clearTimeout(this._connectTimeout)
@@ -238,6 +249,11 @@ export class ConnectionTCP {
             this._reconnectionInterval = setInterval(() => {
                 this.connect()
             }, this._reconnectionIntervalTimeout)
+        })
+
+        // Register custom listener for 'on error'-event for handling internal variables
+        this._socket.on('error', () => {
+            this._isConnected = false
         })
 
         // On data listener
@@ -686,11 +702,13 @@ export class ConnectionTCP {
         this._debug && console.log('[node-vmix]', 'Sending message to vMix instance via socket', message)
 
         // Guard connected
-        if (!this.connected()) {
-            this._debug && console.warn('[node-vmix]', 'Warning! Attempted to send message but socket is not connected', this._socket)
-            throw new Error('[node-vmix] Not able to send message - not connected to socket yet!')
-        }
+        // if (!this.connected()) {
+            // this._debug && console.warn('[node-vmix]', 'Warning! Attempted to send message but socket is not connected', this._socket)
+            // throw new Error('[node-vmix] Not able to send message - not connected to socket yet!')
+            // console.error('[node-vmix] Not able to send message - not connected to socket yet!')
+        // }
 
+        // Write message to socket buffer (will be buffered by socket instance if not connected yet)
         this._socket.write(message, (err) => {
             if (err) throw err
 
@@ -716,6 +734,7 @@ export class ConnectionTCP {
     async connect(host?: string, port?: number) {
         this._debug && console.log('[node-vmix]', 'Attempting to establish TCP socket connection to vMix instance', `${this._host}:${this._port}`)
 
+        // Guard already connected
         if (this.connected()) {
             this._debug && console.log('[node-vmix]', 'TCP socket connection to vMix instance was already established...', `${this._host}:${this._port}`)
             return
@@ -755,9 +774,10 @@ export class ConnectionTCP {
      */
     async send(command: string | string[] | vMixApiFunctionCommand | vMixApiFunctionCommand[]) {
         // Guard socket connected
-        if (!this.connected()) {
-            throw new Error('[node-vmix] Tried to send commands without open socket...')
-        }
+        // if (!this.connected()) {
+            // throw new Error('[node-vmix] Tried to send commands without open socket...')
+            // console.error('[node-vmix] Tried to send commands without open socket...')
+        // }
 
         const commands: (vMixApiFunctionCommand | string)[] = !Array.isArray(command) ? [command] : command
 
@@ -863,7 +883,9 @@ export class ConnectionTCP {
      */
     connected(): boolean {
         // @ts-ignore - Why is readyState not in ts doctype???
-        return this._socket.readyState === 'open'
+        // return this._socket.readyState === 'open'
+
+        return this._isConnected
     }
 
     /**
@@ -871,7 +893,9 @@ export class ConnectionTCP {
      */
     connecting(): boolean {
         // @ts-ignore - Why is readyState not in ts doctype???
-        return this._socket.readyState === 'opening'
+        // return this._socket.readyState === 'opening'
+
+        return this._socket.connecting
     }
 
     // //////////////////////
