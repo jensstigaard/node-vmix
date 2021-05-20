@@ -1,8 +1,8 @@
-const assert = require('assert')
-const moxios = require('moxios')
+import assert from 'assert'
+import moxios from 'moxios'
 
 // Import the modules
-const { CommandSenderHTTP, ConnectionHTTP } = require('../dist/index').default
+import { CommandSenderHTTP, ConnectionHTTP } from '../src/index.js'
 
 describe('command-sender-http', function () {
 
@@ -17,6 +17,7 @@ describe('command-sender-http', function () {
     })
 
     it('should fail if no connection were passed', async function () {
+        // @ts-ignore
         assert.throws(() => { new CommandSenderHTTP() }, "Somehow a connection without hostname were passed..?")
     })
 
@@ -31,7 +32,7 @@ describe('command-sender-http', function () {
         before(function () {
             this.connection = new ConnectionHTTP()
             this.commandSender = new CommandSenderHTTP(this.connection)
-        });
+        })
 
         it('should send a basic command', async function () {
             // Response stub
@@ -40,12 +41,12 @@ describe('command-sender-http', function () {
                 response: 'Function completed successfully.'
             })
 
-            let command = { Function: 'Cut' }
+            const command = { Function: 'Cut' }
 
-            let response = await this.commandSender.send(command)
+            const response = await this.commandSender.send(command)
 
-            assert.equal(response.status, 200)
-            assert.equal(response.data, 'Function completed successfully.')
+            assert.strictEqual(response.status, 200)
+            assert.strictEqual(response.data, 'Function completed successfully.')
         })
 
 
@@ -57,21 +58,21 @@ describe('command-sender-http', function () {
             })
 
             // Commands to invoke
-            let command = [
+            const command = [
                 { Function: 'Cut' },
                 { Function: 'Merge' },
                 { Function: 'Cut' }
             ]
 
-            let response = await this.commandSender.send(command)
+            const response = await this.commandSender.send(command)
 
-            assert.equal(response.status, 200)
-            assert.equal(response.data, 'Function completed successfully.')
+            assert.strictEqual(response.status, 200)
+            assert.strictEqual(response.data, 'Function completed successfully.')
         })
 
         it('should fail when a invalid command is sent', async function () {
 
-            let command = { Function: 'IAmAnInvalidFunction' }
+            const command = { Function: 'IAmAnInvalidFunction' }
 
             // Response stub
             moxios.stubRequest(`${this.connection.apiUrl()}?Function=IAmAnInvalidFunction`, {
@@ -83,8 +84,8 @@ describe('command-sender-http', function () {
                 await this.commandSender.send(command)
                 assert.fail("Request did not fail")
             } catch (error) {
-                assert.equal(error.response.status, 500)
-                assert.equal(error.response.data, 'No suitable Function could be found.')
+                assert.strictEqual(error.response.status, 500)
+                assert.strictEqual(error.response.data, 'No suitable Function could be found.')
             }
         })
     })

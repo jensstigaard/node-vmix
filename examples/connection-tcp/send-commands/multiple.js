@@ -1,6 +1,6 @@
 // Import modules from the package
 // Note when using as npm dep: swap in: 'node-vmix' instead of '../index'
-const { ConnectionTCP } = require('../../../dist/index')
+import { ConnectionTCP } from '../../../dist/index.js'
 
 // Instanciate connection to vMix instance via TCP localhost:8099
 const vMixAddress = 'localhost'

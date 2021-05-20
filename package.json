@@ -2,8 +2,9 @@
   "name": "node-vmix",
   "version": "1.5.1",
   "description": "NodeJS vMix utility to easily send and receive messages to a vMix instance",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "build-test": "yarn build && yarn test",
@@ -12,7 +13,7 @@
     "docs": "yarn typedoc",
     "prepublish": "yarn run snyk-protect && yarn clean && yarn build",
     "snyk-protect": "snyk protect",
-    "test": "mocha --recursive"
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/**/*.test.ts'"
   },
   "repository": {
     "type": "git",
@@ -29,17 +30,20 @@
   },
   "homepage": "https://github.com/jensstigaard/node-vmix#readme",
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   },
   "dependencies": {
     "axios": "^0.21.1",
     "querystring": "^0.2.1"
   },
   "devDependencies": {
+    "@types/mocha": "^8.2.2",
+    "@types/moxios": "^0.4.11",
     "@types/node": "^14",
-    "mocha": "^8.3.2",
+    "mocha": "^8.4.0",
     "moxios": "^0.4.0",
     "snyk": "^1.557.0",
+    "ts-node": "^9.1.1",
     "typedoc": "^0.20.35",
     "typescript": "^4",
     "vmix-js-utils": "^4.0.3"

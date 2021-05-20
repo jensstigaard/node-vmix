@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError, AxiosResponse } from 'axios'
 import querystring from 'querystring'
 
 import ConnectionHTTP from './connection-http'
@@ -7,19 +7,23 @@ import { vMixApiFunctionCommand } from '../types/api-command'
 
 //
 export class CommandSenderHTTP {
-    protected onError: Function
-    protected onSuccess: Function
+    protected onError?: Function
+    protected onSuccess?: Function
 
     protected _connection!: ConnectionHTTP
 
-    constructor(connection: ConnectionHTTP, onSuccess: Function, onError: Function) {
+    constructor(connection: ConnectionHTTP, onSuccess?: Function, onError?: Function) {
         if (!connection) {
             throw new Error('No connection provided')
         }
         this.setConnection(connection)
 
-        this.onError = onError
-        this.onSuccess = onSuccess
+        if (onError) {
+            this.onError = onError
+        }
+        if (onSuccess) {
+            this.onSuccess = onSuccess
+        }
     }
 
     // Prepare promise
@@ -62,11 +66,11 @@ export class CommandSenderHTTP {
         const promise = this.preparePromise(commands)
 
         promise
-            .then((response: any) => {
+            .then((response: AxiosResponse) => {
                 this.onSuccess && this.onSuccess(response)
                 onSuccess && onSuccess(response)
             })
-            .catch((error: any) => {
+            .catch((error: AxiosError) => {
                 this.onError && this.onError(error)
                 onError && onError(error)
             })

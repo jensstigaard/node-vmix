@@ -1,6 +1,6 @@
 // Import modules from the package
 // Note: when using npm swap in: 'node-vmix' instead of '../index'
-const { ConnectionHTTP, CommandSenderHTTP } = require('../../dist/index').default
+import { ConnectionHTTP, CommandSenderHTTP } from '../../dist/index.js'
 
 // Instanciate objects
 const connection = new ConnectionHTTP('localhost', 8088)

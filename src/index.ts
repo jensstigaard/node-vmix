@@ -1,8 +1,8 @@
 //
-import ConnectionTCP from './modules/connection-tcp'
+import ConnectionTCP from './modules/connection-tcp.js'
 
-import ConnectionHTTP from './modules/connection-http'
-import CommandSenderHTTP from './modules/command-sender-http'
+import ConnectionHTTP from './modules/connection-http.js'
+import CommandSenderHTTP from './modules/command-sender-http.js'
 
 // Alias
 const Connection = ConnectionTCP

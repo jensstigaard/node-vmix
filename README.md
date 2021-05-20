@@ -22,7 +22,7 @@ The modules are coded as classes, meaning that they are constructed with specifi
 
 # Quick start
 ```javascript
-const { ConnectionTCP } = require('node-vmix')
+import { ConnectionTCP } from 'node-vmix'
 
 const connection = new ConnectionTCP('localhost')
 
@@ -72,8 +72,7 @@ npm install node-vmix --save
 In your code the simplest way to import the modules is the following:
 
 ```javascript
-const { Connection } = require('node-vmix')
-// or ES6 import syntax:  import { Connection } from 'node-vmix'
+import { Connection } from 'node-vmix'
 
 const connection1 = new Connection('localhost')
 const connection2 = new Connection('192.168.1.50')
@@ -85,7 +84,7 @@ connection2.send({ Function: 'Merge' })
 You are also able to import all of the modules as a gathered variable, less elegant way:
 
 ```javascript
-const vMix = require('node-vmix')
+import vMix from 'node-vmix'
 
 const connection1 = new vMix.Connection('localhost')
 const connection2 = new vMix.Connection('192.168.1.50')
