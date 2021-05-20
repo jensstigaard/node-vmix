@@ -1,3 +1,6 @@
+// Execute this script by running
+// ts-node scratch/native-socket.ts
+
 import Socket from 'net'
 
 const client = Socket.createConnection(
