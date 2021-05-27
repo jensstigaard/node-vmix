@@ -1,6 +1,6 @@
 {
   "name": "node-vmix",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "NodeJS vMix utility to easily send and receive messages to a vMix instance",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -42,7 +42,7 @@
     "snyk": "^1.557.0",
     "typedoc": "^0.20.35",
     "typescript": "^4",
-    "vmix-js-utils": "^4.0.3"
+    "vmix-js-utils": "^4.0.6"
   },
   "snyk": true
 }

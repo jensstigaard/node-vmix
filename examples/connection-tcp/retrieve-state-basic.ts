@@ -7,7 +7,7 @@ import { ConnectionTCP } from '../../dist/index'
 import { XmlApi } from 'vmix-js-utils'
 
 // Set up vMix connection
-const connection = new ConnectionTCP('localhost')
+const connection = new ConnectionTCP('localhost', { debug: true })
 
 // Register callback on 'xml'-events
 // When data is fetched, what to do with it?
