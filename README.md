@@ -100,7 +100,7 @@ connection2.send({ Function: 'Merge' })
 Looking for a full blown example project? See the repositories:
  * [audio-matrix-vmix-electron](https://github.com/jensstigaard/audio-matrix-vmix-electron)
  * [simple-vmix-switcher-electron](https://github.com/jensstigaard/simple-vmix-switcher-electron)
- * [vinproma](https://github.com/jensstigaard/vinproma)
+ * [vinproma](https://github.com/jensstigaard/vinproma) (vMix Input Progress Monitor App)
  
 These apps are using this library for vMix connection. They are built with ElectronJS and can be compiled for both Windows, Mac or Linux platforms.
 
