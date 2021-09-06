@@ -112,7 +112,7 @@ Here are some basic example of how to use the library
    * [Send multiple commands example](../../blob/master/examples/connection-tcp/send-commands/multiple.js)
    * [Send multiple commands mixed strings/objects example](../../blob/master/examples/connection-tcp/send-commands/multiple-mixed.js)
  * Read XML API
-   * [Retrieve all inputs from vMix XML state - Basic example](../../blob/master/examples/read-xml-state-basic.js)
+   * [Retrieve all inputs from vMix XML state - Basic example](../../blob/master/examples/connection-tcp/retrieve-state-basic.js)
  * Misc
    * [Read or subscribe to tally](../../blob/master/examples/connection/tcp/tally.js)
    * [vMix version](../../blob/master/examples/connection/tcp/get-vmix-version.js)
