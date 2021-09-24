@@ -26,7 +26,7 @@ const SOCKET_BASE_LISTENER_TYPES = [
 // "Custom" types of messages from vMix
 const CUSTOM_MESSAGES_TYPES = [
     'tally', // TALLY
-    'acts', // ACTS - Activators
+    'acts', // ACTS - acts
     'version', // vMix version info
 ]
 
@@ -418,7 +418,7 @@ export class ConnectionTCP {
             this._debugBuffer && console.log('[node-vmix]', 'Handling custom message:', messageType)
 
             switch (messageTypeLower) {
-                case 'activators':
+                case 'acts':
                     this.emitActivatorsMessage(firstMessage)
                     break
                 case 'tally':
@@ -518,7 +518,7 @@ export class ConnectionTCP {
      * Emit Activators message
      */
     protected emitActivatorsMessage = (message: string): void => {
-        const listeners = this._listeners.activators
+        const listeners = this._listeners.acts
 
         if (listeners.length) {
             // Tap callback listeners with tally summary
