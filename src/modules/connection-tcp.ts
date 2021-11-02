@@ -1,6 +1,7 @@
-
+// Core libraries
 import { Socket } from 'net'
 
+// Libraries
 import querystring from 'querystring'
 
 // Types
