@@ -28,6 +28,7 @@ const CUSTOM_MESSAGES_TYPES = [
     'tally', // TALLY
     'activators', // Activators 'ACTS'
     'version', // vMix version info
+    'xml', // XML data
 ]
 
 
@@ -35,7 +36,6 @@ const CUSTOM_LISTENER_TYPES = [
     'connecting',
     'data',
     // 'disconnect',
-    'xml',
     ...CUSTOM_MESSAGES_TYPES
 ]
 
