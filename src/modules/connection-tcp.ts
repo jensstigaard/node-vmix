@@ -26,7 +26,7 @@ const SOCKET_BASE_LISTENER_TYPES = [
 // "Custom" types of messages from vMix
 const CUSTOM_MESSAGES_TYPES = [
     'tally', // TALLY
-    'acts', // ACTS - Activators
+    'activators', // Activators 'ACTS'
     'version', // vMix version info
 ]
 
@@ -38,8 +38,6 @@ const CUSTOM_LISTENER_TYPES = [
     'xml',
     ...CUSTOM_MESSAGES_TYPES
 ]
-
-export type VMIX_TCP_MESSAGE_TYPES = 'tally' | 'acts' | 'xml'
 
 /**
  * Default hostname of vMix instance
@@ -418,6 +416,8 @@ export class ConnectionTCP {
             this._debugBuffer && console.log('[node-vmix]', 'Handling custom message:', messageType)
 
             switch (messageTypeLower) {
+                // Activators messages
+                case 'acts':
                 case 'activators':
                     this.emitActivatorsMessage(firstMessage)
                     break
