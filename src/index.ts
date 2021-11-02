@@ -7,6 +7,8 @@ import CommandSenderHTTP from './modules/command-sender-http'
 // Alias
 const Connection = ConnectionTCP
 
+export * from './types/api-command'
+
 export default {
 	Connection, // Alias for ConnectionTCP
 	ConnectionTCP,

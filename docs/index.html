@@ -1,273 +1,130 @@
-<!doctype html>
-<html class="default no-js">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>node-vmix</title>
-	<meta name="description" content="Documentation for node-vmix">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="assets/css/main.css">
-	<script async src="assets/js/search.js" id="search-script"></script>
-</head>
-<body>
-<header>
-	<div class="tsd-page-toolbar">
-		<div class="container">
-			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
-					<div class="field">
-						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
-						<input id="tsd-search-field" type="text" />
-					</div>
-					<ul class="results">
-						<li class="state loading">Preparing search index...</li>
-						<li class="state failure">The search index is not available</li>
-					</ul>
-					<a href="index.html" class="title">node-vmix</a>
-				</div>
-				<div class="table-cell" id="tsd-widgets">
-					<div id="tsd-filter">
-						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
-						<div class="tsd-filter-group">
-							<div class="tsd-select" id="tsd-filter-visibility">
-								<span class="tsd-select-label">All</span>
-								<ul class="tsd-select-list">
-									<li data-value="public">Public</li>
-									<li data-value="protected">Public/Protected</li>
-									<li data-value="private" class="selected">All</li>
-								</ul>
-							</div>
-							<input type="checkbox" id="tsd-filter-inherited" checked />
-							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-						</div>
-					</div>
-					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="tsd-page-title">
-		<div class="container">
-			<h1>node-vmix</h1>
-		</div>
-	</div>
-</header>
-<div class="container container-main">
-	<div class="row">
-		<div class="col-8 col-content">
-			<div class="tsd-panel tsd-typography">
-				<a href="#node-vmix" id="node-vmix" style="color: inherit; text-decoration: none;">
-					<h1>node-vmix</h1>
-				</a>
-				<p>NodeJS vMix API utility to enable easy setup to communicate with vMix instance via TCP socket or HTTP alternatively.</p>
-				<p>It is recommended to use TCP, however, there is currently not implemented feedback/response.
-				It is possible to implement this yourself if necessary, by analysing the responses, but it is not supported out of the box.</p>
-				<p><a href="https://github.com/jensstigaard/node-vmix"><img src="https://img.shields.io/github/package-json/v/jensstigaard/node-vmix.svg" alt="package json version"></a>
-					<a href="https://www.npmjs.com/package/node-vmix"><img src="https://badge.fury.io/js/node-vmix.svg" alt="npm version"></a>
-				<a href="https://www.npmjs.com/package/node-vmix"><img src="https://img.shields.io/npm/dm/node-vmix" alt="npm downloads"></a></p>
-				<p><a href="https://npmjs.com/package/node-vmix"><img src="https://nodei.co/npm/node-vmix.png" alt="NPM Badge"></a></p>
-				<p>This code previously were found in the vmix-js-utils but are now branched out in its own package to enable usage of the vmix-js-utils to be used in a clean frontend environment (non-NodeJS), and also to give a better experience for the users. Are you looking for vMix utility for your js frontend? Take a look at <a href="https://github.com/jensstigaard/vmix-js-utils">vmix-js-utils</a> for more info.
-				Both packages are available with npm - see <a href="https://www.npmjs.com/~jensstigaard">my npm profile</a>.</p>
-				<a href="#purpose" id="purpose" style="color: inherit; text-decoration: none;">
-					<h1>Purpose</h1>
-				</a>
-				<p>node-vmix consists of two modules - one for TCP connection, one for HTTP.
-					Each can be used on its own, but usually it makes more sense to make it interplay with some of the other modules.
-				The modules are coded as classes, meaning that they are constructed with specific parameters, e.g. that the instanciation of a connection needs a host and a port.</p>
-				<a href="#quick-start" id="quick-start" style="color: inherit; text-decoration: none;">
-					<h1>Quick start</h1>
-				</a>
-				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">ConnectionTCP</span><span style="color: #000000"> } = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;node-vmix&#039;</span><span style="color: #000000">)</span>
+<!DOCTYPE html><html class="default no-js"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>node-vmix</title><meta name="description" content="Documentation for node-vmix"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">node-vmix</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>node-vmix</h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
+<a href="#node-vmix" id="node-vmix" style="color: inherit; text-decoration: none;">
+  <h1>node-vmix</h1>
+</a>
+<p>NodeJS vMix API utility to enable easy setup to communicate with vMix instance via TCP socket or HTTP alternatively.</p>
+<p>It is recommended to use TCP, however, there is currently not implemented feedback/response.
+It is possible to implement this yourself if necessary, by analysing the responses, but it is not supported out of the box.</p>
+<p><a href="https://github.com/jensstigaard/node-vmix"><img src="https://img.shields.io/github/package-json/v/jensstigaard/node-vmix.svg" alt="package json version"></a>
+<a href="https://www.npmjs.com/package/node-vmix"><img src="https://badge.fury.io/js/node-vmix.svg" alt="npm version"></a>
+<a href="https://www.npmjs.com/package/node-vmix"><img src="https://img.shields.io/npm/dm/node-vmix" alt="npm downloads"></a></p>
+<p><a href="https://npmjs.com/package/node-vmix"><img src="https://nodei.co/npm/node-vmix.png" alt="NPM Badge"></a></p>
+<p>This code previously were found in the vmix-js-utils but are now branched out in its own package to enable usage of the vmix-js-utils to be used in a clean frontend environment (non-NodeJS), and also to give a better experience for the users. Are you looking for vMix utility for your js frontend? Take a look at <a href="https://github.com/jensstigaard/vmix-js-utils">vmix-js-utils</a> for more info.
+Both packages are available with npm - see <a href="https://www.npmjs.com/~jensstigaard">my npm profile</a>.</p>
 
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">connection</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">ConnectionTCP</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;localhost&#039;</span><span style="color: #000000">)</span>
+<a href="#purpose" id="purpose" style="color: inherit; text-decoration: none;">
+  <h1>Purpose</h1>
+</a>
+<p>node-vmix consists of two modules - one for TCP connection, one for HTTP.
+Each can be used on its own, but usually it makes more sense to make it interplay with some of the other modules.
+The modules are coded as classes, meaning that they are constructed with specific parameters, e.g. that the instanciation of a connection needs a host and a port.</p>
 
-<span style="color: #008000">// Listener for xml state data</span>
-<span style="color: #001080">connection</span><span style="color: #000000">.</span><span style="color: #795E26">on</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;xml&#039;</span><span style="color: #000000">, </span><span style="color: #001080">xmlData</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
-<span style="color: #000000"> </span><span style="color: #008000">// Your logic here!</span>
-<span style="color: #000000"> </span><span style="color: #008000">// See example to parse the XML correctly</span>
-<span style="color: #000000">})</span>
-
-<span style="color: #008000">// Listener for tally</span>
-<span style="color: #001080">connection</span><span style="color: #000000">.</span><span style="color: #795E26">on</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;tally&#039;</span><span style="color: #000000">, </span><span style="color: #001080">tally</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
-<span style="color: #000000"> </span><span style="color: #008000">// Your logic here!</span>
-<span style="color: #000000">})</span>
-
-<span style="color: #008000">// Listener for data such as tally</span>
-<span style="color: #001080">connection</span><span style="color: #000000">.</span><span style="color: #795E26">on</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;data&#039;</span><span style="color: #000000">, </span><span style="color: #001080">data</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
-<span style="color: #000000"> </span><span style="color: #008000">// Your logic here!</span>
-<span style="color: #000000">})</span>
-
-<span style="color: #001080">connection</span><span style="color: #000000">.</span><span style="color: #795E26">on</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;connect&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
-<span style="color: #000000">  </span><span style="color: #008000">// Request vMix API XML state by sending message &#039;XML&#039;</span>
-<span style="color: #000000">  </span><span style="color: #001080">connection</span><span style="color: #000000">.</span><span style="color: #795E26">send</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;XML&#039;</span><span style="color: #000000">)</span>
-
-<span style="color: #000000">  </span><span style="color: #008000">// Request vMix tally info by sending message &#039;TALLY&#039;</span>
-<span style="color: #000000">  </span><span style="color: #001080">connection</span><span style="color: #000000">.</span><span style="color: #795E26">send</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;TALLY&#039;</span><span style="color: #000000">)</span>
-<span style="color: #000000">})</span>
+<a href="#quick-start" id="quick-start" style="color: inherit; text-decoration: none;">
+  <h1>Quick start</h1>
+</a>
+<pre><code class="language-javascript"><span class="hl-0">const</span><span class="hl-1"> { </span><span class="hl-2">ConnectionTCP</span><span class="hl-1"> } = </span><span class="hl-3">require</span><span class="hl-1">(</span><span class="hl-4">&#39;node-vmix&#39;</span><span class="hl-1">)</span><br/><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-2">connection</span><span class="hl-1"> = </span><span class="hl-0">new</span><span class="hl-1"> </span><span class="hl-3">ConnectionTCP</span><span class="hl-1">(</span><span class="hl-4">&#39;localhost&#39;</span><span class="hl-1">)</span><br/><br/><span class="hl-5">// Listener for xml state data</span><br/><span class="hl-6">connection</span><span class="hl-1">.</span><span class="hl-3">on</span><span class="hl-1">(</span><span class="hl-4">&#39;xml&#39;</span><span class="hl-1">, </span><span class="hl-6">xmlData</span><span class="hl-1"> </span><span class="hl-0">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1"> </span><span class="hl-5">// Your logic here!</span><br/><span class="hl-1"> </span><span class="hl-5">// See example to parse the XML correctly</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-5">// Listener for tally</span><br/><span class="hl-6">connection</span><span class="hl-1">.</span><span class="hl-3">on</span><span class="hl-1">(</span><span class="hl-4">&#39;tally&#39;</span><span class="hl-1">, </span><span class="hl-6">tally</span><span class="hl-1"> </span><span class="hl-0">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1"> </span><span class="hl-5">// Your logic here!</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-5">// Listener for data such as tally</span><br/><span class="hl-6">connection</span><span class="hl-1">.</span><span class="hl-3">on</span><span class="hl-1">(</span><span class="hl-4">&#39;data&#39;</span><span class="hl-1">, </span><span class="hl-6">data</span><span class="hl-1"> </span><span class="hl-0">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1"> </span><span class="hl-5">// Your logic here!</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-6">connection</span><span class="hl-1">.</span><span class="hl-3">on</span><span class="hl-1">(</span><span class="hl-4">&#39;connect&#39;</span><span class="hl-1">, () </span><span class="hl-0">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">// Request vMix API XML state by sending message &#39;XML&#39;</span><br/><span class="hl-1">  </span><span class="hl-6">connection</span><span class="hl-1">.</span><span class="hl-3">send</span><span class="hl-1">(</span><span class="hl-4">&#39;XML&#39;</span><span class="hl-1">)</span><br/><br/><span class="hl-1">  </span><span class="hl-5">// Request vMix tally info by sending message &#39;TALLY&#39;</span><br/><span class="hl-1">  </span><span class="hl-6">connection</span><span class="hl-1">.</span><span class="hl-3">send</span><span class="hl-1">(</span><span class="hl-4">&#39;TALLY&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">})</span>
 </code></pre>
-				<p>Note: One should check whether the connection is actually established before attempting sending message to the socket.</p>
-				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
-					<h1>Documentation</h1>
-				</a>
-				<p>Please visit the documentation here: <a href="https://jensstigaard.github.io/node-vmix/">https://jensstigaard.github.io/node-vmix/</a>.</p>
-				<p>The documentation includes definition and description of classes and type.</p>
-				<a href="#installation-and-use" id="installation-and-use" style="color: inherit; text-decoration: none;">
-					<h2>Installation and use</h2>
-				</a>
-				<a href="#as-a-dependency-using-npm" id="as-a-dependency-using-npm" style="color: inherit; text-decoration: none;">
-					<h3>As a dependency using npm</h3>
-				</a>
-				<p>The utilities are published at npmjs as a package for NodeJS, meaning that you can easily add the utilities as a dependency in your NodeJS project.
-				Found here: <a href="https://www.npmjs.com/package/node-vmix">https://www.npmjs.com/package/node-vmix</a></p>
-				<pre><code class="language-sh"><span style="color: #000000">npm install node-vmix --save</span>
-<span style="color: #008000"># or &#039;yarn add node-vmix&#039;</span>
-</code></pre>
-				<p>In your code the simplest way to import the modules is the following:</p>
-				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">Connection</span><span style="color: #000000"> } = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;node-vmix&#039;</span><span style="color: #000000">)</span>
-<span style="color: #008000">// or ES6 import syntax:  import { Connection } from &#039;node-vmix&#039;</span>
+<p>Note: One should check whether the connection is actually established before attempting sending message to the socket.</p>
 
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">connection1</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Connection</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;localhost&#039;</span><span style="color: #000000">)</span>
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">connection2</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Connection</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;192.168.1.50&#039;</span><span style="color: #000000">)</span>
+<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
+  <h1>Documentation</h1>
+</a>
+<p>Please visit the documentation here: <a href="https://jensstigaard.github.io/node-vmix/">https://jensstigaard.github.io/node-vmix/</a>.</p>
+<p>The documentation includes definition and description of classes and type.</p>
 
-<span style="color: #001080">connection1</span><span style="color: #000000">.</span><span style="color: #795E26">send</span><span style="color: #000000">({ </span><span style="color: #001080">Function:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;Cut&#039;</span><span style="color: #000000"> })</span>
-<span style="color: #001080">connection2</span><span style="color: #000000">.</span><span style="color: #795E26">send</span><span style="color: #000000">({ </span><span style="color: #001080">Function:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;Merge&#039;</span><span style="color: #000000"> })</span>
-</code></pre>
-				<p>You are also able to import all of the modules as a gathered variable, less elegant way:</p>
-				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">vMix</span><span style="color: #000000"> = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;node-vmix&#039;</span><span style="color: #000000">)</span>
+<a href="#installation-and-use" id="installation-and-use" style="color: inherit; text-decoration: none;">
+  <h2>Installation and use</h2>
+</a>
 
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">connection1</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">vMix</span><span style="color: #000000">.</span><span style="color: #795E26">Connection</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;localhost&#039;</span><span style="color: #000000">)</span>
-<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">connection2</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">vMix</span><span style="color: #000000">.</span><span style="color: #795E26">Connection</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;192.168.1.50&#039;</span><span style="color: #000000">)</span>
+<a href="#npm" id="npm" style="color: inherit; text-decoration: none;">
+  <h3><a href="https://www.npmjs.com/package/node-vmix">NPM</a></h3>
+</a>
+<p>The utilities are published at npmjs as a package for  <a href="https://nodejs.org/en/">NodeJS</a>, meaning that you can easily add the utilities as a dependency in your project using npm.</p>
+<pre><code class="language-sh"><span class="hl-1">npm install node-vmix --save</span><br/><span class="hl-5"># or &#39;yarn add node-vmix&#39;</span>
+</code></pre>
+<p>In your code the simplest way to import the modules is the following:</p>
+<pre><code class="language-javascript"><span class="hl-0">const</span><span class="hl-1"> { </span><span class="hl-2">Connection</span><span class="hl-1"> } = </span><span class="hl-3">require</span><span class="hl-1">(</span><span class="hl-4">&#39;node-vmix&#39;</span><span class="hl-1">)</span><br/><span class="hl-5">// or ES6 import syntax:  import { Connection } from &#39;node-vmix&#39;</span><br/><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-2">connection1</span><span class="hl-1"> = </span><span class="hl-0">new</span><span class="hl-1"> </span><span class="hl-3">Connection</span><span class="hl-1">(</span><span class="hl-4">&#39;localhost&#39;</span><span class="hl-1">)</span><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-2">connection2</span><span class="hl-1"> = </span><span class="hl-0">new</span><span class="hl-1"> </span><span class="hl-3">Connection</span><span class="hl-1">(</span><span class="hl-4">&#39;192.168.1.50&#39;</span><span class="hl-1">)</span><br/><br/><span class="hl-6">connection1</span><span class="hl-1">.</span><span class="hl-3">send</span><span class="hl-1">({ </span><span class="hl-6">Function:</span><span class="hl-1"> </span><span class="hl-4">&#39;Cut&#39;</span><span class="hl-1"> })</span><br/><span class="hl-6">connection2</span><span class="hl-1">.</span><span class="hl-3">send</span><span class="hl-1">({ </span><span class="hl-6">Function:</span><span class="hl-1"> </span><span class="hl-4">&#39;Merge&#39;</span><span class="hl-1"> })</span>
+</code></pre>
+<p>You are also able to import all of the modules as a gathered variable, less elegant way:</p>
+<pre><code class="language-javascript"><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-2">vMix</span><span class="hl-1"> = </span><span class="hl-3">require</span><span class="hl-1">(</span><span class="hl-4">&#39;node-vmix&#39;</span><span class="hl-1">)</span><br/><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-2">connection1</span><span class="hl-1"> = </span><span class="hl-0">new</span><span class="hl-1"> </span><span class="hl-6">vMix</span><span class="hl-1">.</span><span class="hl-3">Connection</span><span class="hl-1">(</span><span class="hl-4">&#39;localhost&#39;</span><span class="hl-1">)</span><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-2">connection2</span><span class="hl-1"> = </span><span class="hl-0">new</span><span class="hl-1"> </span><span class="hl-6">vMix</span><span class="hl-1">.</span><span class="hl-3">Connection</span><span class="hl-1">(</span><span class="hl-4">&#39;192.168.1.50&#39;</span><span class="hl-1">)</span><br/><br/><span class="hl-6">connection1</span><span class="hl-1">.</span><span class="hl-3">send</span><span class="hl-1">({ </span><span class="hl-6">Function:</span><span class="hl-1"> </span><span class="hl-4">&#39;Cut&#39;</span><span class="hl-1"> })</span><br/><span class="hl-6">connection2</span><span class="hl-1">.</span><span class="hl-3">send</span><span class="hl-1">({ </span><span class="hl-6">Function:</span><span class="hl-1"> </span><span class="hl-4">&#39;Merge&#39;</span><span class="hl-1"> })</span>
+</code></pre>
 
-<span style="color: #001080">connection1</span><span style="color: #000000">.</span><span style="color: #795E26">send</span><span style="color: #000000">({ </span><span style="color: #001080">Function:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;Cut&#039;</span><span style="color: #000000"> })</span>
-<span style="color: #001080">connection2</span><span style="color: #000000">.</span><span style="color: #795E26">send</span><span style="color: #000000">({ </span><span style="color: #001080">Function:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;Merge&#039;</span><span style="color: #000000"> })</span>
-</code></pre>
-				<a href="#examples-and-use" id="examples-and-use" style="color: inherit; text-decoration: none;">
-					<h1>Examples and use</h1>
-				</a>
-				<a href="#electron-example" id="electron-example" style="color: inherit; text-decoration: none;">
-					<h2>Electron example</h2>
-				</a>
-				<p>Looking for a full blown example project? See the repositories:</p>
-				<ul>
-					<li><a href="https://github.com/jensstigaard/audio-matrix-vmix-electron">audio-matrix-vmix-electron</a></li>
-					<li><a href="https://github.com/jensstigaard/simple-vmix-switcher-electron">simple-vmix-switcher-electron</a></li>
-					<li><a href="https://github.com/jensstigaard/vinproma">vinproma</a></li>
-				</ul>
-				<p>These apps are using this library for vMix connection. They are built with ElectronJS and can be compiled for both Windows, Mac or Linux platforms.</p>
-				<a href="#code-snippet-examples" id="code-snippet-examples" style="color: inherit; text-decoration: none;">
-					<h2>Code snippet examples</h2>
-				</a>
-				<p>Here are some basic example of how to use the library</p>
-				<a href="#connection-tcp" id="connection-tcp" style="color: inherit; text-decoration: none;">
-					<h3>Connection TCP</h3>
-				</a>
-				<ul>
-					<li>Send API commands (functions)<ul>
-							<li><a href="../../blob/master/examples/connection-tcp/send-commands/single.js">Send single command example</a></li>
-							<li><a href="../../blob/master/examples/connection-tcp/send-commands/multiple.js">Send multiple commands example</a></li>
-							<li><a href="../../blob/master/examples/connection-tcp/send-commands/multiple-mixed.js">Send multiple commands mixed strings/objects example</a></li>
-						</ul>
-					</li>
-					<li>Read XML API<ul>
-							<li><a href="../../blob/master/examples/read-xml-state-basic.js">Retrieve all inputs from vMix XML state - Basic example</a></li>
-						</ul>
-					</li>
-					<li>Misc<ul>
-							<li><a href="../../blob/master/examples/connection/tcp/tally.js">Read or subscribe to tally</a></li>
-							<li><a href="../../blob/master/examples/connection/tcp/get-vmix-version.js">vMix version</a></li>
-						</ul>
-					</li>
-				</ul>
-				<p>Legacy:</p>
-				<ul>
-					<li><a href="../../blob/master/examples/command-sender-http.js">CommandSenderHTTP example</a></li>
-					<li><a href="../../blob/master/examples/state-fetcher-basic.js">StateFetcher Basic example</a></li>
-				</ul>
-				<a href="#standalone-project--fork" id="standalone-project--fork" style="color: inherit; text-decoration: none;">
-					<h2>Standalone project / Fork</h2>
-				</a>
-				<p>The code can be cloned and tested as needed from the source code.</p>
-				<p>Clone repository and go into directory</p>
-				<pre><code class="language-sh"><span style="color: #000000">git clone https://github.com/jensstigaard/node-vmix.git</span>
-<span style="color: #795E26">cd</span><span style="color: #000000"> node-vmix</span>
-</code></pre>
-				<p>Install dependencies</p>
-				<pre><code class="language-sh"><span style="color: #000000">npm install </span><span style="color: #008000"># or &#039;yarn&#039;</span>
-</code></pre>
-				<p>Compile TypeScript source code to JavaScript</p>
-				<pre><code class="language-sh"><span style="color: #000000">npm install </span><span style="color: #008000"># or &#039;yarn&#039;</span>
-</code></pre>
-				<p>Run tests</p>
-				<pre><code class="language-sh"><span style="color: #000000">npm </span><span style="color: #795E26">test</span><span style="color: #000000"> </span><span style="color: #008000"># or &#039;yarn test&#039;</span>
+<a href="#examples-and-use" id="examples-and-use" style="color: inherit; text-decoration: none;">
+  <h1>Examples and use</h1>
+</a>
 
+<a href="#electron-example" id="electron-example" style="color: inherit; text-decoration: none;">
+  <h2>Electron example</h2>
+</a>
+<p>Looking for a full blown example project? See the repositories:</p>
+<ul>
+<li><a href="https://github.com/jensstigaard/audio-matrix-vmix-electron">audio-matrix-vmix-electron</a></li>
+<li><a href="https://github.com/jensstigaard/simple-vmix-switcher-electron">simple-vmix-switcher-electron</a></li>
+<li><a href="https://github.com/jensstigaard/vinproma">vinproma</a> (vMix Input Progress Monitor App)</li>
+</ul>
+<p>These apps are using this library for vMix connection. They are built with ElectronJS and can be compiled for both Windows, Mac or Linux platforms.</p>
+
+<a href="#code-snippet-examples" id="code-snippet-examples" style="color: inherit; text-decoration: none;">
+  <h2>Code snippet examples</h2>
+</a>
+<p>Here are some basic example of how to use the library</p>
+
+<a href="#connection-tcp" id="connection-tcp" style="color: inherit; text-decoration: none;">
+  <h3>Connection TCP</h3>
+</a>
+<ul>
+<li>Send API commands (functions)<ul>
+<li><a href="../../blob/master/examples/connection-tcp/send-commands/single.js">Send single command example</a></li>
+<li><a href="../../blob/master/examples/connection-tcp/send-commands/multiple.js">Send multiple commands example</a></li>
+<li><a href="../../blob/master/examples/connection-tcp/send-commands/multiple-mixed.js">Send multiple commands mixed strings/objects example</a></li>
+</ul>
+</li>
+<li>Read XML API<ul>
+<li><a href="../../blob/master/examples/connection-tcp/retrieve-state-basic.js">Retrieve all inputs from vMix XML state - Basic example</a></li>
+</ul>
+</li>
+<li>Misc<ul>
+<li><a href="../../blob/master/examples/connection/tcp/tally.js">Read or subscribe to tally</a></li>
+<li><a href="../../blob/master/examples/connection/tcp/get-vmix-version.js">vMix version</a></li>
+</ul>
+</li>
+</ul>
+<p>Legacy:</p>
+<ul>
+<li><a href="../../blob/master/examples/command-sender-http.js">CommandSenderHTTP example</a></li>
+<li><a href="../../blob/master/examples/state-fetcher-basic.js">StateFetcher Basic example</a></li>
+</ul>
+
+<a href="#standalone-project--fork" id="standalone-project--fork" style="color: inherit; text-decoration: none;">
+  <h2>Standalone project / Fork</h2>
+</a>
+<p>The code can be cloned and tested as needed from the source code.</p>
+<p>Clone repository and go into directory</p>
+<pre><code class="language-sh"><span class="hl-1">git clone https://github.com/jensstigaard/node-vmix.git</span><br/><span class="hl-3">cd</span><span class="hl-1"> node-vmix</span>
 </code></pre>
-				<a href="#contribution" id="contribution" style="color: inherit; text-decoration: none;">
-					<h1>Contribution</h1>
-				</a>
-				<p>You are more than welcome to contribute to the repository.
-				Fork the repo and make a pull request with the changes.</p>
-				<p>As you can see in the list on the right side, others have done it already!</p>
-				<a href="#roadmap" id="roadmap" style="color: inherit; text-decoration: none;">
-					<h1>Roadmap</h1>
-				</a>
-				<ul>
-					<li>TCP command sender: feedback/responses on commands sent</li>
-					<li>More tests</li>
-					<li>Perhaps more functionality</li>
-				</ul>
-			</div>
-		</div>
-		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
-			<nav class="tsd-navigation primary">
-				<ul>
-					<li class=" ">
-						<a href="modules.html">Exports</a>
-					</li>
-				</ul>
-			</nav>
-			<nav class="tsd-navigation secondary menu-sticky">
-				<ul class="before-current">
-					<li class=" tsd-kind-reference">
-						<a href="modules.html#connection" class="tsd-kind-icon">Connection</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/commandsenderhttp.html" class="tsd-kind-icon">Command<wbr>SenderHTTP</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/connectionhttp.html" class="tsd-kind-icon">ConnectionHTTP</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/connectiontcp.html" class="tsd-kind-icon">ConnectionTCP</a>
-					</li>
-					<li class=" tsd-kind-property">
-						<a href="modules.html#default" class="tsd-kind-icon">default</a>
-					</li>
-				</ul>
-			</nav>
-		</div>
-	</div>
-</div>
-<footer class="with-border-bottom">
-	<div class="container">
-		<h2>Legend</h2>
-		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-			</ul>
-		</div>
-	</div>
-</footer>
-<div class="container tsd-generator">
-	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
-</div>
-<div class="overlay"></div>
-<script src="assets/js/main.js"></script>
-</body>
-</html>
+<p>Install dependencies</p>
+<pre><code class="language-sh"><span class="hl-1">npm install </span><span class="hl-5"># or &#39;yarn&#39;</span>
+</code></pre>
+<p>Compile TypeScript source code to JavaScript</p>
+<pre><code class="language-sh"><span class="hl-1">npm install </span><span class="hl-5"># or &#39;yarn&#39;</span>
+</code></pre>
+<p>Run tests</p>
+<pre><code class="language-sh"><span class="hl-1">npm </span><span class="hl-3">test</span><span class="hl-1"> </span><span class="hl-5"># or &#39;yarn test&#39;</span><br/>
+</code></pre>
+
+<a href="#contribution" id="contribution" style="color: inherit; text-decoration: none;">
+  <h1>Contribution</h1>
+</a>
+<p>You are more than welcome to contribute to the repository.
+Fork the repo and make a pull request with the changes.</p>
+<p>As you can see in the list on the right side, others have done it already!</p>
+
+<a href="#roadmap" id="roadmap" style="color: inherit; text-decoration: none;">
+  <h1>Roadmap</h1>
+</a>
+<ul>
+<li>TCP command sender: feedback/responses on commands sent</li>
+<li>More tests</li>
+<li>Perhaps more functionality</li>
+</ul>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="tsd-kind-reference"><a href="modules.html#Connection" class="tsd-kind-icon">Connection</a></li><li class="tsd-kind-class"><a href="classes/CommandSenderHTTP.html" class="tsd-kind-icon">Command<wbr/>SenderHTTP</a></li><li class="tsd-kind-class"><a href="classes/ConnectionHTTP.html" class="tsd-kind-icon">ConnectionHTTP</a></li><li class="tsd-kind-class"><a href="classes/ConnectionTCP.html" class="tsd-kind-icon">ConnectionTCP</a></li><li class="tsd-kind-type-alias"><a href="modules.html#vMixApiFunctionCommand" class="tsd-kind-icon">v<wbr/>Mix<wbr/>Api<wbr/>Function<wbr/>Command</a></li><li class="tsd-kind-property"><a href="modules.html#default" class="tsd-kind-icon">default</a></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>
