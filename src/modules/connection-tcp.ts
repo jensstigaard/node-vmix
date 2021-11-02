@@ -518,7 +518,7 @@ export class ConnectionTCP {
      * Emit Activators message
      */
     protected emitActivatorsMessage = (message: string): void => {
-        const listeners = this._listeners.activators
+        const listeners = this._listeners.acts
 
         if (listeners.length) {
             // Tap callback listeners with tally summary
