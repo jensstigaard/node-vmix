@@ -32,7 +32,7 @@ const CUSTOM_MESSAGES_TYPES = [
     'xml', // XML data
 ]
 
-
+// All lower-case listener types
 const CUSTOM_LISTENER_TYPES = [
     'connecting',
     'data',
@@ -801,7 +801,12 @@ export class ConnectionTCP {
      * @param {Function} callback 
      */
     on(type: string, callback: Function): void {
-        const desiredListenerType = type.toLowerCase()
+        let desiredListenerType = type.toLocaleLowerCase()
+
+        // Alias for 'activators'-listener: 'acts'
+        if (desiredListenerType === 'acts') {
+            desiredListenerType = 'activators'
+        }
 
         // All available listener types
         const availableListenerTypes = SOCKET_BASE_LISTENER_TYPES.concat(CUSTOM_LISTENER_TYPES)
