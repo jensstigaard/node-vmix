@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@types/node@^14.0":
-  version "14.17.32"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.17.32.tgz#2ca61c9ef8c77f6fa1733be9e623ceb0d372ad96"
-  integrity sha512-JcII3D5/OapPGx+eJ+Ik1SQGyt6WvuqdRfh9jUwL6/iHGjmyOriBDciBUu7lEIBTL2ijxwrR70WUnw5AEDmFvQ==
+"@types/node@^12.0.0":
+  version "12.20.36"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.36.tgz#5bd54d2383e714fc4d2c258107ee70c5bad86d0c"
+  integrity sha512-+5haRZ9uzI7rYqzDznXgkuacqb6LJhAti8mzZKWxIXn/WEtvB+GHVJ7AuMwcN1HMvXOSJcrvA6PPoYHYOYYebA==
 
 "@ungap/promise-all-settled@1.1.2":
   version "1.1.2"
@@ -611,9 +611,9 @@ wrappy@1:
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
 
-"xmldom@git+https://github.com/xmldom/xmldom.git#v0.7.0":
+"xmldom@https://github.com/xmldom/xmldom#v0.7.0":
   version "0.7.0"
-  resolved "git+https://github.com/xmldom/xmldom.git#c568938641cc1f121cef5b4df80fcfda1e489b6e"
+  resolved "https://github.com/xmldom/xmldom#c568938641cc1f121cef5b4df80fcfda1e489b6e"
 
 xpath@^0.0.32:
   version "0.0.32"
