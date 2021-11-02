@@ -5,7 +5,9 @@
  * https://www.vmix.com/help24/index.htm?ShortcutFunctionReference.html
  */
 export type vMixApiFunctionCommand = {
-	// May always contain Function parameter
-	Function: String
+	// Must always contain Function parameter
+	Function: string
+
+	// Arbitary other parameters
 	[key: string]: any
 }
