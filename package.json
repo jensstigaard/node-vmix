@@ -19,8 +19,9 @@
     "url": "git+https://github.com/jensstigaard/node-vmix.git"
   },
   "keywords": [
-    "vMix Live Streaming Software",
-    "vMix instance TCP socket"
+    "livestreaming",
+    "tcpsocket",
+    "vMix"
   ],
   "author": "Jens Grønhøj Stigaard <jens@stigaard.info>",
   "license": "MIT",
