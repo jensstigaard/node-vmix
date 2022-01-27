@@ -15,6 +15,7 @@ client.on('connect', (err: any) => {
 	}
 
 	console.log('Connected!')
+	client.write('XML\r\n')
 })
 
 client.on('data', (data: Buffer) => {
