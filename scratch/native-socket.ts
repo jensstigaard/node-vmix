@@ -1,11 +1,12 @@
 // Execute this script by running
 // ts-node scratch/native-socket.ts
+// Requires ts-node to be installed globally (run 'yarn global add ts-node')
 
 import Socket from 'net'
 
 const client = Socket.createConnection(
 	{ host: 'localhost', port: 8099 },
-	() => { console.log('Msg upon initiazation') }
+	() => { console.log('Msg upon initialization') }
 )
 
 client.on('connect', (err: any) => {

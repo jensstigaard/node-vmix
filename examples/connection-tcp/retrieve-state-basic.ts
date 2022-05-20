@@ -1,13 +1,16 @@
 // Run by using command:
 // ts-node examples/connection-tcp/retrieve-state-basic.ts
+// Requires ts-node to be installed globally (run 'yarn global add ts-node')
 
 // Import modules from the package
 // Note when using as npm dep: swap in: 'node-vmix' instead of '../index'
 import { ConnectionTCP } from '../../dist/index'
 import { XmlApi } from 'vmix-js-utils'
 
+const DEBUG = false
+
 // Set up vMix connection
-const connection = new ConnectionTCP('localhost', { debug: true })
+const connection = new ConnectionTCP('localhost', { debug: DEBUG })
 
 // Register callback on 'xml'-events
 // When data is fetched, what to do with it?
