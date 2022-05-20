@@ -10,9 +10,10 @@
     "clean": "rm -ifr ./dist/*",
     "clean-build": "yarn clean && yarn build",
     "docs": "yarn typedoc",
-    "prepublish": "yarn run snyk-protect && yarn clean && yarn build",
-    "snyk-protect": "snyk protect",
-    "test": "snyk test && mocha --recursive"
+    "prepublish": "yarn snyk-protect && yarn clean && yarn build",
+    "snyk-protect": "snyk-protect",
+    "snyk-test": "npx snyk test",
+    "test": "yarn snyk-test && mocha --recursive"
   },
   "repository": {
     "type": "git",
@@ -33,17 +34,17 @@
     "node": ">=12"
   },
   "dependencies": {
-    "axios": "^0.24.0",
+    "axios": "^0.27.2",
     "querystring": "^0.2.1"
   },
   "devDependencies": {
+    "@snyk/protect": "^1.934.0",
     "@types/node": "^12.0.0",
-    "mocha": "^9.1.3",
+    "mocha": "^10.0.0",
     "moxios": "^0.4.0",
-    "snyk": "^1.826.0",
-    "typedoc": "^0.22.7",
-    "typescript": "^4.4.4",
-    "vmix-js-utils": "^4.0.8"
+    "typedoc": "^0.22.15",
+    "typescript": "^4.6.4",
+    "vmix-js-utils": "^4.0.13"
   },
   "snyk": true
 }
