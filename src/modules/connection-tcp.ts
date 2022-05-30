@@ -148,6 +148,9 @@ export class ConnectionTCP {
             useDataListenersAsFallback?: boolean,
         } = {}
     ) {
+        // // Set socket encoding to utf8
+        // this._socket.setEncoding('utf8')
+
         // Guard passed options of wrong type
         // if (!options || typeof options !== 'object') {
         //     options = {}
@@ -734,7 +737,7 @@ export class ConnectionTCP {
      * 
      * Attempt to establish connection to socket of vMix instance
      */
-    async connect(host?: string, port?: number) {
+    connect(host?: string, port?: number): void {
         this._debug && console.log('[node-vmix]', 'Attempting to establish TCP socket connection to vMix instance', `${this._host}:${this._port}`)
 
         // Guard already connected
@@ -754,10 +757,11 @@ export class ConnectionTCP {
         this._listeners.connecting.forEach(cb => cb())
 
         // Attempt establishing connection
-        this._socket.connect(this._port, this._host, () => {
-            // Resolve promise upon establishment of socket connection 
-            Promise.resolve()
-        })
+        this._socket.connect(this._port, this._host)
+        // this._socket.connect(this._port, this._host, () => {
+        //     // Resolve promise upon establishment of socket connection 
+        //     Promise.resolve()
+        // })
     }
 
     /**
