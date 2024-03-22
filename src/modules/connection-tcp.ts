@@ -53,7 +53,12 @@ const DEFAULT_HOST = 'localhost'
 const DEFAULT_TCP_PORT = 8099
 
 /**
- * Length in bytes of CRLF (New Line character on Microsoft Windows) "\r\n"
+ * CRLF (New Line character on Microsoft Windows) that delimits messages
+ */
+const NEWLINE_CHAR = '\r\n'
+
+/**
+ * Length in bytes of CRLF
  */
 const NEWLINE_CHAR_BYTE_LENGTH = 2
 
@@ -75,9 +80,10 @@ export class ConnectionTCP {
     protected _host: string = DEFAULT_HOST
     protected _port: number = DEFAULT_TCP_PORT
 
-    // Buffer to store byte array of currently incoming messages
-    protected _buffer: Buffer = Buffer.from([])
-
+    // Array to store incoming message lines that were fully received
+    private _unprocessedLines: string[] = []
+    // Currently incoming message that has not arrived in full
+	private _lineFragment = ''
     /**
      * Node TCP socket client to vMix instance
      */
@@ -170,6 +176,9 @@ export class ConnectionTCP {
         this._debug && console.log('[node-vmix]', 'Received options', options)
         // this._debug && console.log('[node-vmix]', '-----')
 
+        // Set encoding so that the 'data' event delivers data chunks as strings
+        this._socket.setEncoding('utf-8')
+
         // Set core attributes
         this._setHost(host)
         this._setPort('port' in options && options.port ? options.port : DEFAULT_TCP_PORT)
@@ -260,13 +269,12 @@ export class ConnectionTCP {
 
         // On data listener
         // Put data into buffer and try to process data
-        this._socket.on('data', (data: Buffer) => {
+        this._socket.on('data', (data: string) => {
             this._debugBuffer && console.log('[node-vmix]', 'Received data from vMix instance via socket connection')
             this._debugBuffer && console.log(data)
             this._debugBuffer && console.log('----------------')
 
-            this._buffer = Buffer.concat([this._buffer, data])
-            this._processBuffer()
+            this._processChunk(data)
         })
 
         // Setup timeout for maximum time to connect
@@ -324,24 +332,36 @@ export class ConnectionTCP {
         this._port = port
     }
 
-    /**
-     * Process received data that is currently in the buffer
-     */
-    protected _processBuffer = (): void => {
-        // Process buffer if it contains data
-        if (!this._buffer.byteLength) {
-            return
+    protected _processChunk = (data: string): void => {
+		const bufferToSplit = this._lineFragment + data
+
+        if (bufferToSplit.length) {
+            // Split on each new line
+            const receivedLines = bufferToSplit.split(NEWLINE_CHAR)
+
+            const lastChunk = receivedLines.pop()
+
+            if (lastChunk != null && lastChunk !== '') {
+                // Incomplete line found at the end - keep it
+                this._lineFragment = lastChunk
+            } else {
+                this._lineFragment = ''
+            }
+            this._unprocessedLines.push(...receivedLines)
         }
 
-        // Parse buffer to string and trim start and end
-        const data = this._buffer.toString()
+        this._processLines()
+    }
 
-        // Split on each new line
-        const receivedLines = data.split('\r\n')
+    /**
+     * Process the lines of received data that are complete
+     */
+    protected _processLines = (): void => {
+
 
         // If less than two lines were found
         // do not process buffer yet - keep whole buffer
-        if (receivedLines.length === 0) {
+        if (this._unprocessedLines.length === 0) {
             return
         }
 
@@ -355,9 +375,10 @@ export class ConnectionTCP {
         // We know now that the buffer got at least one complete message!
         // We now ingest and analyse this first message
         let firstMsg = ''
-        for (let i = 0; i < receivedLines.length; i++) {
-            const line = receivedLines[i]
-            if (line.length) {
+
+        for (let i = 0; i < this._unprocessedLines.length; i++) {
+            const line = this._unprocessedLines.shift()
+            if (line?.length) {
                 firstMsg = line
                 break
             }
@@ -378,8 +399,6 @@ export class ConnectionTCP {
             return
         }
 
-        const firstMessageLength = Buffer.from(firstMessage).byteLength
-
         this._debugBuffer && console.log('[node-vmix]', 'Reading buffer message:', firstMessage)
         // this._debugBuffers && console.log(
         //     'Length of first message in buffer',
@@ -393,18 +412,17 @@ export class ConnectionTCP {
         // If an XML message then
         // just emit the message without further manipulation
         if (messageType === 'XML') {
-            return this._processBufferXMLmessage(firstMessage, firstMessageLength, firstMessageParts)
+            return this._processXMLmessage(firstMessage, firstMessageParts)
             // Otherwise treat customly based on type of message
         }
 
-        return this._processBufferNonXMLmessage(messageType, messageStatus, firstMessage, firstMessageLength)
+        return this._processNonXMLmessage(messageType, messageStatus, firstMessage)
     }
 
-    protected _processBufferNonXMLmessage(
+    protected _processNonXMLmessage(
         messageType: string,
         messageStatus: string,
         firstMessage: string,
-        firstMessageByteLength: number,
     ): void {
         this._debugBuffer && console.log('[node-vmix]', 'Processing non-XML message:', firstMessage)
 
@@ -439,12 +457,7 @@ export class ConnectionTCP {
             }
         }
 
-        // Pop first message from buffer
-        const sliced = this._buffer.slice(firstMessageByteLength + NEWLINE_CHAR_BYTE_LENGTH)
-        // console.log('Sliced', sliced.toString())
-        this._buffer = sliced
-
-        this._processBuffer()
+        this._processLines()
     }
 
     /**
@@ -454,9 +467,8 @@ export class ConnectionTCP {
      * @param firstMessageLength
      * @param firstMessageParts
      */
-    protected _processBufferXMLmessage(
+    protected _processXMLmessage(
         firstMessage: string,
-        firstMessageLength: number,
         firstMessageParts: string[]
     ): void {
         // We now know the message were a XML message
@@ -483,28 +495,31 @@ export class ConnectionTCP {
         // console.log('First message length: ', firstMessageLength)
         // console.log('Needed from message: ', bufferLengthNeeded)
 
-        const messageCompleteLength = firstMessageLength + NEWLINE_CHAR_BYTE_LENGTH + bufferLengthNeeded
-        if (this._buffer.byteLength < messageCompleteLength) {
-            // console.log('Not enough data in buffer...')
-            // console.log(`"""${data}"""`)
+        let messageCompleteLength = 0
+        let messagesToTake = 0
+        for (let i = 0; i < this._unprocessedLines.length; i++) {
+            messageCompleteLength += Buffer.byteLength(this._unprocessedLines[i], 'utf-8') + NEWLINE_CHAR_BYTE_LENGTH
+            if (messageCompleteLength >= bufferLengthNeeded) {
+                messagesToTake = i + 1
+                break
+            }
+        }
+
+        if (messagesToTake === 0) {
+            // we didn't receive enough lines
+            this._unprocessedLines.unshift(firstMessage)
             return
         }
 
         // The buffer were "long enough"
         // Exctract the XML data
 
-        const xmlData = this._buffer.slice(
-            firstMessageLength + NEWLINE_CHAR_BYTE_LENGTH,
-            firstMessageLength + bufferLengthNeeded
-        )
-        const xmlDataString = xmlData.toString()
+        const xmlData = this._unprocessedLines.splice(0, messagesToTake).join(NEWLINE_CHAR)
 
-        this.emitXmlMessage(xmlDataString)
 
-        // Pop message from current buffer data and update buffer
-        this._buffer = this._buffer.slice(messageCompleteLength)
+        this.emitXmlMessage(xmlData)
 
-        this._processBuffer()
+        this._processLines()
     }
 
 
@@ -682,8 +697,8 @@ export class ConnectionTCP {
     protected ensureMessageEnding = (message: string): string => {
         // End message with a new line character
         // to make sure the message is interpreted by the receiver
-        if (!message.endsWith('\r\n')) {
-            message += '\r\n'
+        if (!message.endsWith(NEWLINE_CHAR)) {
+            message += NEWLINE_CHAR
         }
 
         return message
