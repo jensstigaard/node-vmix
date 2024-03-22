@@ -83,7 +83,8 @@ export class ConnectionTCP {
     // Array to store incoming message lines that were fully received
     private _unprocessedLines: string[] = []
     // Currently incoming message that has not arrived in full
-	private _lineFragment = ''
+    private _lineFragment = ''
+
     /**
      * Node TCP socket client to vMix instance
      */
@@ -333,7 +334,7 @@ export class ConnectionTCP {
     }
 
     protected _processChunk = (data: string): void => {
-		const bufferToSplit = this._lineFragment + data
+        const bufferToSplit = this._lineFragment + data
 
         if (bufferToSplit.length) {
             // Split on each new line
