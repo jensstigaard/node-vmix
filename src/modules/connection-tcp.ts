@@ -297,7 +297,7 @@ export class ConnectionTCP {
     // ///////////////////////////////
 
     /**
-     * Set host
+     * Set host of vMix instance
      * 
      * @param {string} host
      */
@@ -311,7 +311,7 @@ export class ConnectionTCP {
     }
 
     /**
-     * Set port
+     * Set port of vMix instance
      * 
      * @param {number} port
      */
@@ -337,7 +337,7 @@ export class ConnectionTCP {
         const data = this._buffer.toString()
 
         // Split on each new line
-        const receivedLines = data.split('\r\n')
+        const receivedLines = data.split('\r\n', 2)
 
         // If less than two lines were found
         // do not process buffer yet - keep whole buffer
@@ -413,8 +413,6 @@ export class ConnectionTCP {
             this._debugBuffer && console.log('[node-vmix]', 'Emitting error message:', firstMessage)
             this._emitMessage(firstMessage)
         } else {
-
-
             const messageTypeLower = messageType.toLowerCase()
 
             this._debugBuffer && console.log('[node-vmix]', 'Handling custom message:', messageType)
@@ -703,7 +701,7 @@ export class ConnectionTCP {
      * @returns {Promise}
      */
     protected _sendMessageToSocket = async (message: string) => {
-        this._debug && console.log('[node-vmix]', 'Sending message to vMix instance via socket', message)
+        this._debug && console.log('[node-vmix]', 'Sending message to vMix instance via socket:', message)
 
         // Guard connected
         // if (!this.connected()) {
@@ -896,6 +894,8 @@ export class ConnectionTCP {
     connected(): boolean {
         // @ts-ignore - Why is readyState not in ts doctype???
         // return this._socket.readyState === 'open'
+
+        // console.log('ReadyState=', this._socket.readyState)
 
         return this._isConnected
     }
