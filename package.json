@@ -7,13 +7,13 @@
   "scripts": {
     "build": "tsc",
     "build-test": "yarn build && yarn test",
-    "clean": "rm -ifr ./dist/*",
+    "clean": "rimraf ./dist/",
     "clean-build": "yarn clean && yarn build",
     "docs": "yarn typedoc",
     "prepublish": "yarn snyk-protect && yarn clean && yarn build",
     "snyk-protect": "snyk-protect",
     "snyk-test": "npx snyk test",
-    "test": "yarn snyk-test && mocha --recursive"
+    "test": "yarn snyk-test && yarn jest"
   },
   "repository": {
     "type": "git",
@@ -39,9 +39,13 @@
   },
   "devDependencies": {
     "@snyk/protect": "^1.934.0",
+    "@types/jest": "^29.5.12",
+    "@types/moxios": "^0.4.17",
     "@types/node": "^12.0.0",
-    "mocha": "^10.0.0",
+    "jest": "^29.7.0",
     "moxios": "^0.4.0",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.2",
     "typedoc": "^0.22.15",
     "typescript": "^4.6.4",
     "vmix-js-utils": "^4.0.13"
