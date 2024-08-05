@@ -6,8 +6,9 @@
 // Note when using as npm dep: swap in: 'node-vmix' instead of '../index'
 import { ConnectionTCP } from '../../dist/index'
 import { XmlApi } from 'vmix-js-utils'
+import { TitleInput } from 'vmix-js-utils/dist/types/inputs/title'
 
-const DEBUG = false
+const DEBUG = true
 
 // Set up vMix connection
 const connection = new ConnectionTCP('localhost', { debug: DEBUG })
@@ -25,7 +26,9 @@ connection.on('xml', (xmlData: string) => {
   const inputs = XmlApi.Inputs.map(inputsRawData)
 
   // Now you have a list of inputs
-  console.log(inputs)
+  console.table(inputs)
+
+  console.log((inputs[4] as TitleInput).fields)
 })
 
 // Add on connect listener
