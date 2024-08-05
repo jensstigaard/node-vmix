@@ -21,5 +21,5 @@ client.on('connect', (err: any) => {
 
 client.on('data', (data: Buffer) => {
 	const str = data.toString('utf8')
-	console.log('Received data!', str)
+	console.log('Received data!', str.slice(0,100))
 })
