@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/jensstigaard/node-vmix#readme",
   "engines": {
-    "node": ">=20"
+    "node": ">=18"
   },
   "scripts": {
     "build": "tsc",
