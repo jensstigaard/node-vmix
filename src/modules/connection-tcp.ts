@@ -100,7 +100,7 @@ export class ConnectionTCP {
 
     protected _isRetrying: boolean = false
     protected _reconnectionIntervalTimeout: number = 10000
-    protected _reconnectionInterval: Node.js.Timeout | null = null
+    protected _reconnectionInterval: NodeJS.Timeout | null = null
 
     // // Timeout for establishing the connection. Should be smaller than the reconnect invterval!
     // protected _connectTimeoutDuration: number = 5000
