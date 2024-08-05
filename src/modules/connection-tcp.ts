@@ -70,7 +70,7 @@ const NEWLINE_CHAR_BYTE_LENGTH = 2
 // vMix TCP API docs
 // https://www.vmix.com/help24/TCPAPI.html
 //
-// Internally using NodeJS Net Socket
+// Internally using Node.js Net Socket
 // https://nodejs.org/api/net.html#net_new_net_socket_options
 //
 // With inspiration from: Github Gist: Node.js TCP client / server
@@ -100,11 +100,11 @@ export class ConnectionTCP {
 
     protected _isRetrying: boolean = false
     protected _reconnectionIntervalTimeout: number = 10000
-    protected _reconnectionInterval: NodeJS.Timeout | null = null
+    protected _reconnectionInterval: Node.js.Timeout | null = null
 
     // // Timeout for establishing the connection. Should be smaller than the reconnect invterval!
     // protected _connectTimeoutDuration: number = 5000
-    // protected _connectTimeout: NodeJS.Timeout | null = null
+    // protected _connectTimeout: Node.js.Timeout | null = null
 
     /**
      * Connection state
