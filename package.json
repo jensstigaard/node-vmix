@@ -1,20 +1,9 @@
 {
   "name": "node-vmix",
-  "version": "1.6.1",
-  "description": "NodeJS vMix utility to easily send and receive messages to a vMix instance",
+  "version": "1.7.0",
+  "description": "Node.js vMix utility to easily send and receive messages to a vMix instance",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "build-test": "yarn build && yarn test",
-    "clean": "rimraf ./dist/",
-    "clean-build": "yarn clean && yarn build",
-    "docs": "yarn typedoc",
-    "prepublish": "yarn snyk-protect && yarn clean && yarn build",
-    "snyk-protect": "snyk-protect",
-    "snyk-test": "npx snyk test",
-    "test": "yarn snyk-test && yarn jest"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jensstigaard/node-vmix.git"
@@ -32,6 +21,17 @@
   "homepage": "https://github.com/jensstigaard/node-vmix#readme",
   "engines": {
     "node": ">=12"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build-test": "yarn build && yarn test",
+    "clean": "rimraf ./dist/",
+    "clean-build": "yarn clean && yarn build",
+    "docs": "yarn typedoc",
+    "prepublish": "yarn snyk-protect && yarn clean && yarn build",
+    "snyk-protect": "snyk-protect",
+    "snyk-test": "npx snyk test",
+    "test": "yarn snyk-test && yarn jest"
   },
   "dependencies": {
     "axios": "^1.6.8",
