@@ -1,6 +1,6 @@
 # node-vmix
 
-NodeJS vMix API utility to enable easy setup to communicate with vMix instance via TCP socket or HTTP alternatively.
+Node.js vMix API utility to enable easy setup to communicate with vMix instance via TCP socket or HTTP alternatively.
 
 It is recommended to use TCP, however, there is currently not implemented feedback/response.
 It is possible to implement this yourself if necessary, by analysing the responses, but it is not supported out of the box.
@@ -11,7 +11,7 @@ It is possible to implement this yourself if necessary, by analysing the respons
 
 [![NPM Badge](https://nodei.co/npm/node-vmix.png)](https://npmjs.com/package/node-vmix)
 
-This code previously were found in the vmix-js-utils but are now branched out in its own package to enable usage of the vmix-js-utils to be used in a clean frontend environment (non-NodeJS), and also to give a better experience for the users. Are you looking for vMix utility for your js frontend? Take a look at [vmix-js-utils](https://github.com/jensstigaard/vmix-js-utils) for more info.
+This code previously were found in the vmix-js-utils but are now branched out in its own package to enable usage of the vmix-js-utils to be used in a clean frontend environment (non-Node.js), and also to give a better experience for the users. Are you looking for vMix utility for your js frontend? Take a look at [vmix-js-utils](https://github.com/jensstigaard/vmix-js-utils) for more info.
 Both packages are available with npm - see [my npm profile](https://www.npmjs.com/~jensstigaard).
 
 # Purpose
@@ -63,7 +63,7 @@ The documentation includes definition and description of classes and type.
 
 ## Installation and use
 ### [NPM](https://www.npmjs.com/package/node-vmix)
-The utilities are published at npmjs as a package for  [NodeJS](https://nodejs.org/en/), meaning that you can easily add the utilities as a dependency in your project using npm.
+The utilities are published at npmjs as a package for  [Node.js](https://nodejs.org/en/), meaning that you can easily add the utilities as a dependency in your project using npm.
 ```sh
 npm install node-vmix --save
 # or 'yarn add node-vmix'
