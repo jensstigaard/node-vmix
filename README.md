@@ -123,30 +123,8 @@ Legacy:
  * [StateFetcher Basic example](../../blob/master/examples/state-fetcher-basic.js)
 
 
-
-## Standalone project / Fork
-The code can be cloned and tested as needed from the source code.
-
-Clone repository and go into directory
-```sh
-git clone https://github.com/jensstigaard/node-vmix.git
-cd node-vmix
-```
-Install dependencies
-```sh
-npm install # or 'yarn'
-```
-Compile TypeScript source code to JavaScript
-```sh
-npm install # or 'yarn'
-```
-Run tests
-```sh
-npm test # or 'yarn test'
-
-```
-
 # Contribution
+
 You are more than welcome to contribute to the repository.
 Fork the repo and make a pull request with the changes.
 
