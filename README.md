@@ -126,9 +126,15 @@ Legacy:
 # Contribution
 
 You are more than welcome to contribute to the repository.
-Fork the repo and make a pull request with the changes.
+Please read the [CONTRIBUTION guide](./CONTRIBUTION.md)
 
-As you can see in the list on the right side, others have done it already!
+# Contributors
+
+Multiple individuals have contributed to the project - thanks to you all!
+
+<a href = "https://github.com/jensstigaard/node-vmix/graphs/contributors">
+  <img src = "https://contrib.rocks/image?repo=jensstigaard/node-vmix"/>
+</a>
 
 
 # Roadmap
